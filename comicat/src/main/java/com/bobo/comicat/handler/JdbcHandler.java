@@ -13,7 +13,12 @@ public interface JdbcHandler {
   /**
    * 初始化数据库
    *
-   * @return
+   * @return 返回初始化结果
    */
-  Future<Void> init();
+  Future<JdbcHandler> init();
+
+  /**
+   * 注册数据库服务
+   */
+  void registrationService();
 }

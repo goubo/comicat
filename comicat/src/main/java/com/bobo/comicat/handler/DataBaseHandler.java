@@ -19,10 +19,9 @@ public class DataBaseHandler extends BaseBean {
     super(vertx, config);
     getHandler(config.getString(DATABASE_TYPE_KEY)).init().onFailure(f -> {
       f.printStackTrace();
-    }).onSuccess(s -> {
-
-    });
-
+      System.out.println("初始化失败,系统准备退出");
+      System.exit(-1);
+    }).onSuccess(JdbcHandler::registrationService);
   }
 
 

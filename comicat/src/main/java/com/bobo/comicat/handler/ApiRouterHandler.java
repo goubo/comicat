@@ -15,7 +15,7 @@ public class ApiRouterHandler extends BaseBean {
 
   public ApiRouterHandler(Vertx vertx, JsonObject config) {
     super(vertx, config);
-    vertx.createHttpServer().listen(47373);
+    vertx.createHttpServer().requestHandler(req->{}).listen(47373);
 
   }
 

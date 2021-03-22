@@ -17,7 +17,11 @@ public class MysqlJdbcHandler extends BaseBean implements JdbcHandler {
   }
 
   @Override
-  public Future<Void> init() {
+  public Future<JdbcHandler> init() {
     return null;
+  }
+
+  @Override
+  public void registrationService() {
   }
 }
