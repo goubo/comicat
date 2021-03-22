@@ -1,5 +1,10 @@
 package com.bobo.comicat.common.entity;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.util.List;
+
 /**
  * 查询漫画类
  *
@@ -8,16 +13,40 @@ package com.bobo.comicat.common.entity;
  * @since 2021/3/21
  **/
 
-public record ComicsQuery(
-  String comicsName,
-  String queryString,
-  String tags,
-
-  String orderByField,
-  String orderByValue,
-
-  int pageSize,
-  int pageNumber,
-  int total) {
+@Data
+@Accessors(chain = true)
+public class ComicsQuery {
+  /**
+   * 漫画名称
+   */
+  private String comicsName;
+  /**
+   * 其他查询条件
+   */
+  private String queryString;
+  /**
+   * 标签
+   */
+  private List<String> comicsTags;
+  /**
+   * 排序字段
+   */
+  private String orderByField;
+  /**
+   * 排序顺序
+   */
+  private String orderByValue;
+  /**
+   * 每页条数
+   */
+  private int pageSize;
+  /**
+   * 页数
+   */
+  private int pageNumber;
+  /**
+   * 总条数
+   */
+  private int total;
 }
 

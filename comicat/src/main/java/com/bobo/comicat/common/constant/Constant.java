@@ -11,6 +11,7 @@ public class Constant {
 
   public static final String HOME_PATH = System.getProperty("user.home");
   public static final String CACHE_PATH = HOME_PATH + "/.cache/comicat";
+  public static final String CACHE_UPLOAD_PATH = CACHE_PATH + "/upload";
   public static final String CACHE_CONFIG_PATH = CACHE_PATH + "/config.json";
   public static final String DATABASE_TYPE_KEY = "dataBaseType";
   public static final String DATABASE_TYPE_SQLITE = "sqlite";
@@ -20,6 +21,7 @@ public class Constant {
 
   public static final String EVENT_BUS_WRITER_CONFIG_ADDRESS = "eventbus.config.writerConfig";
   public static final String EVENT_BUS_LOAD_CONFIG = "eventbus.config.loadConfig";
+
 
 
 }

@@ -1,5 +1,8 @@
 package com.bobo.comicat.jdbc;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.base.MyCompositeFuture;
 import com.bobo.comicat.common.entity.ComicsQuery;
@@ -11,56 +14,32 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.bobo.comicat.common.JdbcConstant.QUERY_COMICS_PAGE;
 import static com.bobo.comicat.common.constant.Constant.SQLITE_PATH;
+import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_COUNT;
+import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_PAGE;
 
 /**
  * @author BO
  * @date 2021-03-19 10:54
  * @since 2021/3/19
  **/
+@Slf4j
 public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
   public SqliteJdbcHandler(Vertx vertx, JsonObject config) {
     super(vertx, config);
   }
 
-  private final String[] createTable = {"""
-    CREATE TABLE IF NOT EXISTS "chapter" (
-      "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      "comics_id" INTEGER NOT NULL,
-      "chapter_name" TEXT,
-      "status" TEXT,
-      "chapter_index" INTEGER,
-      "page_number" INTEGER
-    );
-    """, """
-    CREATE TABLE IF NOT EXISTS "comics" (
-      "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-      "comics_name" TEXT,
-      "comics_author" TEXT,
-      "comics_tags" TEXT,
-      "status" TEXT,
-      "create_time" DATE,
-      "resource_type" TEXT,
-      "resource_path" TEXT
-    );
-    """, """
-    CREATE TABLE IF NOT EXISTS "reading_record" (
-      "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      "comics_id" INTEGER,
-      "chapter_id" INTEGER,
-      "position" TEXT,
-      "recording_time" DATE
-    );
-    """, """
-    CREATE TABLE IF NOT EXISTS "tag" (
-      "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-      "name" TEXT NOT NULL
-    );
-    """
+  private final String[] createTable = {
+    "CREATE TABLE IF NOT EXISTS chapter (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER NOT NULL,chapter_name TEXT,status TEXT,chapter_index INTEGER,page_number INTEGER);",
+    "CREATE TABLE IF NOT EXISTS comics (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,comics_name TEXT,comics_author TEXT,comics_tags TEXT,status TEXT,create_time DATE,resource_type TEXT,resource_path TEXT,file_type TEXT,file_path TEXT);",
+    "CREATE TABLE IF NOT EXISTS reading_record (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER,chapter_id INTEGER,position TEXT,recording_time DATE);",
+    "CREATE TABLE IF NOT EXISTS tag (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL);"
   };
 
   private JDBCClient jdbcClient;
@@ -92,23 +71,75 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
 
   @Override
   public void registrationService() {
+    log.info("registrationService");
     //查询漫画列表 分页
+    eventBus.consumer(QUERY_COMICS_COUNT, this::queryComicsCount);
     eventBus.consumer(QUERY_COMICS_PAGE, this::queryComicsPage);
 
   }
 
-
-  private void queryComicsPage(Message<ComicsQuery> message) {
-    ComicsQuery body = message.body();
+  private void queryComicsPage(Message<JsonObject> message) {
+    ComicsQuery comicsQuery = JSONUtil.toBean(message.body().toString(), ComicsQuery.class);
     //先查询数据总数
-    String selectAll = "select count(1) from comics";
-    jdbcClient.querySingle(selectAll, selectAllRes -> {
-      if (selectAllRes.succeeded()) {
-        JsonArray result = selectAllRes.result();
-        System.out.println(result);
+    String selectPage = "select * from comics";
+    List<Object> list = new ArrayList<>();
+    String whereSql = getComicsWhereSql(comicsQuery, list);
+    if (StrUtil.isNotEmpty(whereSql)) {
+      selectPage += " where " + whereSql;
+    }
+    selectPage += " limit ?,?";
+    list.add((comicsQuery.getPageNumber() - 1) * comicsQuery.getPageSize());
+    list.add(comicsQuery.getPageSize());
+    jdbcClient.queryWithParams(selectPage, new JsonArray(list), selectPageRes -> {
+      if (selectPageRes.succeeded()) {
+        message.reply(new JsonArray(selectPageRes.result().getRows()));
       } else {
-
+        selectPageRes.cause().printStackTrace();
       }
     });
+  }
+
+  private void queryComicsCount(Message<JsonObject> message) {
+    ComicsQuery comicsQuery = JSONUtil.toBean(message.body().toString(), ComicsQuery.class);
+    //先查询数据总数
+    String selectCount = "select count(1) from comics";
+    List<Object> list = new ArrayList<>();
+    String whereSql = getComicsWhereSql(comicsQuery, list);
+    if (StrUtil.isNotEmpty(whereSql)) {
+      selectCount += " where " + whereSql;
+    }
+    jdbcClient.querySingleWithParams(selectCount, new JsonArray(list), selectCountRes -> {
+      if (selectCountRes.succeeded()) {
+        message.reply(selectCountRes.result().getInteger(0));
+      } else {
+        selectCountRes.cause().printStackTrace();
+      }
+    });
+  }
+
+  private String getComicsWhereSql(ComicsQuery comicsQuery, List<Object> list) {
+    String whereSql = "";
+    if (StrUtil.isNotEmpty(comicsQuery.getComicsName())) {
+      whereSql = "comics_name like '%' || ? || '%' ";
+      list.add(comicsQuery.getComicsName());
+    }
+    if (CollectionUtil.isNotEmpty(comicsQuery.getComicsTags())) {
+      if (comicsQuery.getComicsTags().size() == 1) {
+        if (StrUtil.isNotEmpty(whereSql)) {
+          whereSql += " and ";
+        }
+        whereSql += "comics_tags like '%,' || ? || ',%' ";
+        list.add(comicsQuery.getComicsTags().get(0));
+      } else {
+        whereSql += "(";
+        String and = comicsQuery.getComicsTags().stream().map(s -> {
+          list.add(s);
+          return " comics_tags like '%,' || ? || ',%' ";
+        }).collect(Collectors.joining("or"));
+        whereSql += and;
+        whereSql += ")";
+      }
+    }
+    return whereSql;
   }
 }

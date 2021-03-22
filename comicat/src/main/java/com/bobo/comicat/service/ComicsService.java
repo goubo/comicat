@@ -1,8 +1,23 @@
 package com.bobo.comicat.service;
 
+import cn.hutool.core.util.NumberUtil;
+import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
+import com.bobo.comicat.common.entity.Comics;
+import com.bobo.comicat.common.entity.ComicsQuery;
+import com.bobo.comicat.common.entity.ComicsView;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_COUNT;
+import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_PAGE;
 
 /**
  * 漫画类
@@ -12,7 +27,40 @@ import io.vertx.core.json.JsonObject;
  * @since 2021/3/21
  **/
 public class ComicsService extends BaseBean {
-  protected ComicsService(Vertx vertx, JsonObject config) {
+  public ComicsService(Vertx vertx, JsonObject config) {
     super(vertx, config);
   }
+
+  public void getComics(RoutingContext routingContext) {
+    ComicsQuery comicsQuery = new ComicsQuery();
+    MultiMap params = routingContext.request().params();
+    comicsQuery.setComicsName(params.get("comicsName"));
+    comicsQuery.setComicsTags(params.getAll("comicsTags"));
+    comicsQuery.setPageNumber(NumberUtil.parseInt(params.get("pageNumber")));
+    if (comicsQuery.getPageSize() == 0) {
+      comicsQuery.setPageSize(config.getInteger("page_size", 12));
+    }
+    if (comicsQuery.getPageNumber() < 1) {
+      comicsQuery.setPageNumber(1);
+    }
+    JsonObject comicsQueryJson = JsonObject.mapFrom(comicsQuery);
+    eventBus.request(QUERY_COMICS_COUNT, comicsQueryJson).onSuccess(s -> {
+      Integer count = (Integer) s.body();
+      if (count < 1) {
+        ComicsView comicsView = new ComicsView().setComicsQuery(comicsQuery).setComicsList(new ArrayList<>());
+        responseSuccess(routingContext.response(), comicsView);
+      } else {
+        comicsQuery.setTotal(count);
+        //查询数据
+        eventBus.request(QUERY_COMICS_PAGE, comicsQueryJson).onSuccess(su -> {
+
+          List<Comics> list = ((JsonArray) su.body()).stream().map(o -> JSONUtil.toBean(o.toString(),Comics.class)).collect(Collectors.toList());
+          ComicsView comicsView = new ComicsView().setComicsQuery(comicsQuery).setComicsList(list);
+          responseSuccess(routingContext.response(), comicsView);
+        }).onFailure(f -> responseError(routingContext.response(), 500, f.getMessage()));
+
+      }
+    }).onFailure(f -> responseError(routingContext.response(), 500, f.getMessage()));
+  }
+
 }

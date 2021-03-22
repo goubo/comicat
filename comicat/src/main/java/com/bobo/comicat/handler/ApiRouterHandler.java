@@ -1,8 +1,18 @@
 package com.bobo.comicat.handler;
 
 import com.bobo.comicat.common.base.BaseBean;
+import com.bobo.comicat.common.entity.ComicsQuery;
+import com.bobo.comicat.service.ComicsService;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+
+import static com.bobo.comicat.common.constant.ApiConstant.GET_COMICS;
+import static com.bobo.comicat.common.constant.Constant.CACHE_UPLOAD_PATH;
 
 /**
  * 路由
@@ -12,14 +22,27 @@ import io.vertx.core.json.JsonObject;
  * @since 2021/3/19
  **/
 public class ApiRouterHandler extends BaseBean {
+  private final Router router;
 
   public ApiRouterHandler(Vertx vertx, JsonObject config) {
     super(vertx, config);
-    vertx.createHttpServer().requestHandler(req->{}).listen(47373);
+    router = getRouter();
+    vertx.createHttpServer().requestHandler(router).listen(47373);
 
   }
 
-  public void Router() {
+  public void router() {
+    ComicsService comicsService = new ComicsService(vertx, config);
+
+    router.get(GET_COMICS).handler(comicsService::getComics);
 
   }
+
+  private Router getRouter() {
+    Router router = Router.router(vertx);
+    router.route().handler(BodyHandler.create().setUploadsDirectory(CACHE_UPLOAD_PATH));
+    router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)).setSessionCookieName("comicat_session"));
+    return router;
+  }
+
 }

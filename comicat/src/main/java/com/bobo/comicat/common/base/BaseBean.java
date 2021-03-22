@@ -1,16 +1,10 @@
 package com.bobo.comicat.common.base;
 
-import io.vertx.config.ConfigRetriever;
-import io.vertx.config.ConfigRetrieverOptions;
-import io.vertx.config.ConfigStoreOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.eventbus.Message;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-
-import java.io.File;
 
 /**
  * 根类
@@ -31,6 +25,15 @@ public abstract class BaseBean {
     this.vertx = vertx;
     this.config = config;
     this.eventBus = vertx.eventBus();
-
   }
+
+  protected void responseSuccess(HttpServerResponse response, Object object) {
+    response.putHeader("content-type", "application/json; charset=utf-8").setStatusCode(200).end(Json.encode(object));
+  }
+
+  protected void responseError(HttpServerResponse response, int code, String msg) {
+    response.putHeader("content-type", "application/json; charset=utf-8").setStatusCode(code).end(msg);
+  }
+
+
 }

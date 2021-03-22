@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d [%t] %p %l - %msg%n"/>
+    </Console>
+    <RollingFile name="RollingFile" fileName="${env:data_bus_log:-./log}/data-bus.log"
+                 filePattern="${env:data_bus_log:-./log}/data-bus-%d{yyyyMMdd}.log">
+      <PatternLayout pattern="%d [%t] %p %l - %msg%n"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+      </Policies>
+      <DefaultRolloverStrategy>
+        <Delete basePath="${env:data_bus_log:-./log}">
+          <IfFileName glob="data-bus-*.log"/>
+          <IfLastModified age="1d"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="debug">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="RollingFile"/>
+    </Root>
+  </Loggers>
+</Configuration>

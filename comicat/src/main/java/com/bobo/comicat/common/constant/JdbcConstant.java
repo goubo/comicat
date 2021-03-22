@@ -1,4 +1,4 @@
-package com.bobo.comicat.common;
+package com.bobo.comicat.common.constant;
 
 /**
  * jdbc操作类
@@ -8,5 +8,6 @@ package com.bobo.comicat.common;
  * @since 2021/3/21
  **/
 public class JdbcConstant {
+    public static final String QUERY_COMICS_COUNT = "jdbc.queryComicsCount";
     public static final String QUERY_COMICS_PAGE = "jdbc.queryComicsPage";
 }

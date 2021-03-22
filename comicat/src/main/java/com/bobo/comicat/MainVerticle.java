@@ -28,7 +28,7 @@ public class MainVerticle extends AbstractVerticle {
     new ConfigHandler(vertx, config());
     eventBus.request(EVENT_BUS_LOAD_CONFIG, "").onSuccess(s -> {
       new DataBaseHandler(vertx, config());
-      new ApiRouterHandler(vertx, config()).Router();
+      new ApiRouterHandler(vertx, config()).router();
     });
 
 
