@@ -7,13 +7,12 @@ import java.util.List;
 
 /**
  * @author BO
- * @date 2021-03-22 15:47
- * @since 2021/3/22
+ * @date 2021-03-23 13:52
+ * @since 2021/3/23
  **/
 @Data
 @Accessors(chain = true)
-public class ComicsView {
-  private ComicsQuery comicsQuery;
-  private List<Comics> comicsList;
-  private Comics comics;
+public class TagView {
+
+  private List<Tag> tagList;
 }

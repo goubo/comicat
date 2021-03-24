@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.base.MyCompositeFuture;
 import com.bobo.comicat.common.entity.ComicsQuery;
+import com.bobo.comicat.common.entity.TagQuery;
 import com.bobo.comicat.handler.JdbcHandler;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -21,8 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.bobo.comicat.common.constant.Constant.SQLITE_PATH;
-import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_COUNT;
-import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_PAGE;
+import static com.bobo.comicat.common.constant.JdbcConstant.*;
 
 /**
  * @author BO
@@ -76,6 +76,38 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     eventBus.consumer(QUERY_COMICS_COUNT, this::queryComicsCount);
     eventBus.consumer(QUERY_COMICS_PAGE, this::queryComicsPage);
 
+    eventBus.consumer(QUERY_TAGS, this::queryTags);
+
+  }
+
+  private void queryTags(Message<JsonObject> message) {
+    TagQuery tagQuery = JSONUtil.toBean(message.body().toString(), TagQuery.class);
+    String select = "select * from tag";
+    String whereSql = "";
+    List<Object> params = new ArrayList<>();
+    if (StrUtil.isNotEmpty(tagQuery.getName())) {
+      whereSql += "name = ?";
+      params.add(tagQuery.getName());
+    }
+    if (StrUtil.isNotEmpty(tagQuery.getGradeType())) {
+      if (StrUtil.isNotEmpty(whereSql)) {
+        whereSql += " and ";
+      }
+      whereSql += "grade_type = ?";
+      params.add(tagQuery.getGradeType());
+    }
+    if (StrUtil.isNotEmpty(whereSql)) {
+      select += " where ";
+      select += whereSql;
+    }
+    jdbcClient.queryWithParams(select, new JsonArray(params), res -> {
+      if (res.succeeded()) {
+        message.reply(new JsonArray(res.result().getRows()));
+      } else {
+        message.fail(500, res.cause().getMessage());
+      }
+    });
+
   }
 
   private void queryComicsPage(Message<JsonObject> message) {
@@ -94,7 +126,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
       if (selectPageRes.succeeded()) {
         message.reply(new JsonArray(selectPageRes.result().getRows()));
       } else {
-        selectPageRes.cause().printStackTrace();
+        message.fail(500, selectPageRes.cause().getMessage());
       }
     });
   }
@@ -123,16 +155,16 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
       whereSql = "comics_name like '%' || ? || '%' ";
       list.add(comicsQuery.getComicsName());
     }
-    if (CollectionUtil.isNotEmpty(comicsQuery.getComicsTags())) {
-      if (comicsQuery.getComicsTags().size() == 1) {
+    if (CollectionUtil.isNotEmpty(comicsQuery.getComicsTagList())) {
+      if (comicsQuery.getComicsTagList().size() == 1) {
         if (StrUtil.isNotEmpty(whereSql)) {
           whereSql += " and ";
         }
         whereSql += "comics_tags like '%,' || ? || ',%' ";
-        list.add(comicsQuery.getComicsTags().get(0));
+        list.add(comicsQuery.getComicsTagList().get(0));
       } else {
         whereSql += "(";
-        String and = comicsQuery.getComicsTags().stream().map(s -> {
+        String and = comicsQuery.getComicsTagList().stream().map(s -> {
           list.add(s);
           return " comics_tags like '%,' || ? || ',%' ";
         }).collect(Collectors.joining("or"));

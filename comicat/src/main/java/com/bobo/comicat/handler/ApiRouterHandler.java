@@ -1,10 +1,9 @@
 package com.bobo.comicat.handler;
 
 import com.bobo.comicat.common.base.BaseBean;
-import com.bobo.comicat.common.entity.ComicsQuery;
 import com.bobo.comicat.service.ComicsService;
+import com.bobo.comicat.service.TagService;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -12,6 +11,7 @@ import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 import static com.bobo.comicat.common.constant.ApiConstant.GET_COMICS;
+import static com.bobo.comicat.common.constant.ApiConstant.GET_TAGS;
 import static com.bobo.comicat.common.constant.Constant.CACHE_UPLOAD_PATH;
 
 /**
@@ -33,8 +33,10 @@ public class ApiRouterHandler extends BaseBean {
 
   public void router() {
     ComicsService comicsService = new ComicsService(vertx, config);
+    TagService tagService = new TagService(vertx, config);
 
     router.get(GET_COMICS).handler(comicsService::getComics);
+    router.get(GET_TAGS).handler(tagService::getTags);
 
   }
 

@@ -10,4 +10,7 @@ package com.bobo.comicat.common.constant;
 public class JdbcConstant {
     public static final String QUERY_COMICS_COUNT = "jdbc.queryComicsCount";
     public static final String QUERY_COMICS_PAGE = "jdbc.queryComicsPage";
+
+
+    public static final String QUERY_TAGS = "jdbc.quereTags";
 }

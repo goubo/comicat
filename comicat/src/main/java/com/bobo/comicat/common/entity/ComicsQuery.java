@@ -1,6 +1,7 @@
 package com.bobo.comicat.common.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -15,19 +16,17 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class ComicsQuery {
-  /**
-   * 漫画名称
-   */
-  private String comicsName;
+@EqualsAndHashCode(callSuper=true)
+public class ComicsQuery extends Comics {
   /**
    * 其他查询条件
    */
   private String queryString;
+
   /**
    * 标签
    */
-  private List<String> comicsTags;
+  private List<String> comicsTagList;
   /**
    * 排序字段
    */

@@ -35,7 +35,7 @@ public class ComicsService extends BaseBean {
     ComicsQuery comicsQuery = new ComicsQuery();
     MultiMap params = routingContext.request().params();
     comicsQuery.setComicsName(params.get("comicsName"));
-    comicsQuery.setComicsTags(params.getAll("comicsTags"));
+    comicsQuery.setComicsTagList(params.getAll("comicsTags"));
     comicsQuery.setPageNumber(NumberUtil.parseInt(params.get("pageNumber")));
     if (comicsQuery.getPageSize() == 0) {
       comicsQuery.setPageSize(config.getInteger("page_size", 12));

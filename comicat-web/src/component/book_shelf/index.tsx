@@ -13,7 +13,7 @@ export class BookShelf extends React.Component<any, any> {
         super(props);
         this.changeMenu = this.changeMenu.bind(this);
         this.state = {
-            tagCode: ''
+            tagCode: []
         }
     }
 
@@ -21,6 +21,7 @@ export class BookShelf extends React.Component<any, any> {
         this.setState({
             tagCode: menu
         })
+
     }
 
     render() {
