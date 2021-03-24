@@ -10,8 +10,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
-import static com.bobo.comicat.common.constant.ApiConstant.GET_COMICS;
-import static com.bobo.comicat.common.constant.ApiConstant.GET_TAGS;
+import static com.bobo.comicat.common.constant.ApiConstant.*;
 import static com.bobo.comicat.common.constant.Constant.CACHE_UPLOAD_PATH;
 
 /**
@@ -36,6 +35,7 @@ public class ApiRouterHandler extends BaseBean {
     TagService tagService = new TagService(vertx, config);
 
     router.get(GET_COMICS).handler(comicsService::getComics);
+    router.get(GET_COMICS_IMAGE).handler(comicsService::getComicsImage);
     router.get(GET_TAGS).handler(tagService::getTags);
 
   }

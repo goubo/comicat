@@ -167,7 +167,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
         String and = comicsQuery.getComicsTagList().stream().map(s -> {
           list.add(s);
           return " comics_tags like '%,' || ? || ',%' ";
-        }).collect(Collectors.joining("or"));
+        }).collect(Collectors.joining(comicsQuery.getTagLogic()));
         whereSql += and;
         whereSql += ")";
       }

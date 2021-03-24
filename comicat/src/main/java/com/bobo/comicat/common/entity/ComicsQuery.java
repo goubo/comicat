@@ -16,12 +16,16 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class ComicsQuery extends Comics {
   /**
    * 其他查询条件
    */
   private String queryString;
+  /**
+   * tag 关系
+   */
+  private String tagLogic;
 
   /**
    * 标签

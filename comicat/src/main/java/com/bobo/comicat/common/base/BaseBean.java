@@ -35,5 +35,9 @@ public abstract class BaseBean {
     response.putHeader("content-type", "application/json; charset=utf-8").setStatusCode(code).end(msg);
   }
 
+  protected void responseError(HttpServerResponse response, Throwable throwable) {
+    responseError(response, 500, throwable.getMessage());
+  }
+
 
 }

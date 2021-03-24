@@ -53,4 +53,8 @@ public class Comics {
    * 文件路径
    */
   private String filePath;
+  /**
+   * 封面路径
+   */
+  private String coverImage;
 }

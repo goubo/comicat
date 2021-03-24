@@ -3,6 +3,7 @@ import {Tabs} from 'antd';
 import './App.css';
 import {BookShelf} from "./component/book_shelf";
 import TestBOBO from "./component/test/Test";
+import {Setting} from "./component/setting";
 
 const {TabPane} = Tabs;
 
@@ -20,7 +21,7 @@ function App() {
                     Content of Tab Pane 3
                 </TabPane>
                 <TabPane tab="设置" key="4">
-                    Content of Tab Pane 1
+                    <Setting/>
                 </TabPane>
                 <TabPane tab="测试" key="5">
                     <TestBOBO/>
