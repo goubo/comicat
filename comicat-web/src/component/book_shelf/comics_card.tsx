@@ -1,5 +1,7 @@
 import React from 'react';
-import {Card, Col, Radio, Row, Space} from "antd";
+import {Button, Card, Col, Modal, Radio, Row, Space, Tooltip} from "antd";
+import {PlusCircleOutlined} from "@ant-design/icons";
+import {AddComics} from './add_comics';
 
 const {Meta} = Card;
 
@@ -9,11 +11,12 @@ export class ComicsCard extends React.Component<any, any> {
         super(props);
         this.state = {
             comicsList: this.props.comicsList,
-            tagList: this.props.tagList
+            tagList: this.props.tagList,
+            addComicsTop: false,
         }
     }
 
-    static getDerivedStateFromProps(props: any, state: any) {
+    static getDerivedStateFromProps(props: any) {
         return {
             tagList: props.tagList,
             comicsList: props.comicsList,
@@ -23,35 +26,62 @@ export class ComicsCard extends React.Component<any, any> {
     handleSizeChange = (e: any) => {
         console.log(e.target.value)
     }
+    showAddComicsTop = () => {
+        this.setState({
+            addComicsTop: true,
+        })
+    }
+    closeAddComicsTop = () => {
+        this.setState({
+            addComicsTop: false,
+        })
+    }
 
     render() {
+
         return (
             <div>
                 <Row style={{paddingTop: '2vh'}}>
                     <Col offset={1} span={20}> {this.state.tagList}</Col>
                     <Col>
-                        <Radio.Group onChange={this.handleSizeChange} defaultValue={'table'}>
-                            <Radio.Button value="table">网格</Radio.Button>
-                            <Radio.Button value="list">列表</Radio.Button>
-                        </Radio.Group>
+                        <Space>
+                            <Tooltip title="添加">
+                                <Button type="primary" shape="circle" icon={<PlusCircleOutlined/>}
+                                        onClick={this.showAddComicsTop}/>
+                            </Tooltip>
+
+                            <Radio.Group onChange={this.handleSizeChange} defaultValue={'table'}>
+                                <Radio.Button value="table">网格</Radio.Button>
+                                <Radio.Button value="list">列表</Radio.Button>
+                            </Radio.Group>
+                        </Space>
                     </Col>
                 </Row>
-                <Space wrap align={"center"}>
+                <Space wrap align={"baseline"}>
                     {this.state.comicsList.map((item: any, index: number) => {
                         return (
-                            <Card key={index}>
+                            <Card key={index} hoverable>
                                 <img
+                                    width={200}
                                     alt="example"
-                                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                                    src={"/api/comics/cover/" + item.coverImage}
                                 />
+
                                 <Meta
                                     title={item.comicsName}
-                                    description=""
+                                    description={item.description}
                                 />
                             </Card>
                         )
                     })}
                 </Space>
+
+                <Modal title="添加漫画" visible={this.state.addComicsTop} onCancel={this.closeAddComicsTop}
+                       footer={""}>
+                    <AddComics/>
+                </Modal>
             </div>)
     }
+
+
 }

@@ -8,9 +8,10 @@ package com.bobo.comicat.common.constant;
  * @since 2021/3/21
  **/
 public class JdbcConstant {
-    public static final String QUERY_COMICS_COUNT = "jdbc.queryComicsCount";
-    public static final String QUERY_COMICS_PAGE = "jdbc.queryComicsPage";
+  public static final String QUERY_COMICS_TAGS = "jdbc.query.comicsTags";
+  public static final String QUERY_COMICS_COUNT = "jdbc.query.comicsCount";
+  public static final String QUERY_COMICS_PAGE = "jdbc.query.comicsPage";
 
 
-    public static final String QUERY_TAGS = "jdbc.quereTags";
+  public static final String QUERY_TAGS = "jdbc.query.Tags";
 }

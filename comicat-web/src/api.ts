@@ -27,6 +27,11 @@ export class api extends Function {
         console.log(e)
     })
 
+
+    static getConfig = () => client.get('/config').catch(e => {
+        console.log(e)
+    })
+
 }
 
 

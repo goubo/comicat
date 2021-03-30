@@ -17,11 +17,9 @@ export class BookShelf extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
         this.changeTags = this.changeTags.bind(this);
-        this.setTagMap = this.setTagMap.bind(this);
         this.changeTagLogic = this.changeTagLogic.bind(this);
         this.state = {
             tagCode: [],
-            tagMap: {},
             list: []
         }
     }
@@ -30,9 +28,6 @@ export class BookShelf extends React.Component<any, any> {
         comicsTags: [],
         tagLogic: "or",
     }
-    setTagMap = (map: any) => this.setState({
-        tagMap: map
-    });
     changeTagLogic = (tagLogic: string) => {
         this.queryParams.tagLogic = tagLogic
         this.extracted()
@@ -74,13 +69,12 @@ export class BookShelf extends React.Component<any, any> {
                     <TagMenu
                         tagLogic={this.queryParams.tagLogic}
                         changeTags={this.changeTags}
-                        changeTagLogic={this.changeTagLogic}
-                        setTagMap={this.setTagMap}/>
+                        changeTagLogic={this.changeTagLogic}/>
                 </Sider>
                 <Content>
                     <ComicsCard
                         comicsList={this.state.list}
-                        tagList={"tags:" + this.state.tagCode.map((o: string | number) => this.state.tagMap[o] + "")}
+                        tagList={"tags:" + this.state.tagCode}
                     />
                 </Content>
             </Layout>

@@ -75,10 +75,23 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     //查询漫画列表 分页
     eventBus.consumer(QUERY_COMICS_COUNT, this::queryComicsCount);
     eventBus.consumer(QUERY_COMICS_PAGE, this::queryComicsPage);
+    eventBus.consumer(QUERY_COMICS_TAGS, this::queryComicsTags);
 
     eventBus.consumer(QUERY_TAGS, this::queryTags);
 
   }
+
+  private void queryComicsTags(Message<String> message) {
+    String sql = "select comics_tags from comics";
+    jdbcClient.query(sql, res -> {
+      if (res.succeeded()) {
+        message.reply(new JsonArray(res.result().getResults()));
+      } else {
+        message.fail(500, res.cause().getMessage());
+      }
+    });
+  }
+
 
   private void queryTags(Message<JsonObject> message) {
     TagQuery tagQuery = JSONUtil.toBean(message.body().toString(), TagQuery.class);
@@ -163,6 +176,9 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
         whereSql += "comics_tags like '%,' || ? || ',%' ";
         list.add(comicsQuery.getComicsTagList().get(0));
       } else {
+        if (StrUtil.isNotEmpty(comicsQuery.getTagLogic())) {
+          comicsQuery.setTagLogic("or");
+        }
         whereSql += "(";
         String and = comicsQuery.getComicsTagList().stream().map(s -> {
           list.add(s);

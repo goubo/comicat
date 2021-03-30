@@ -20,7 +20,6 @@ export class TagMenu extends React.Component<any, any> {
     }
 
     optionMap: any = {}
-    allCheck: string[] = []
     checkedList: string[] = []
     checkedAll = false
     indeterminateAll = false
@@ -34,7 +33,7 @@ export class TagMenu extends React.Component<any, any> {
     }
     checkAll = (e: any) => {
         if (e.target.checked) {
-            this.checkedList = this.allCheck
+            this.checkedList = this.state.options
         } else {
             this.checkedList = []
         }
@@ -48,15 +47,8 @@ export class TagMenu extends React.Component<any, any> {
     componentDidMount() {
         api.getTagList({}).then(response => {
             if (response && response.data) {
-                let options: CheckboxOptionType[] = [];
-                response.data.tagList.map((o: any) => {
-                    this.allCheck.push(o.id);
-                    this.optionMap[o.id] = o.name
-                    return options.push({label: o.name, value: o.id, disabled: false});
-                })
-                this.props.setTagMap(this.optionMap)
                 this.setState({
-                    options: options
+                    options: response.data
                 })
 
             }

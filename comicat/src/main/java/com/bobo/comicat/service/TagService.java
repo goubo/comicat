@@ -1,21 +1,14 @@
 package com.bobo.comicat.service;
 
-import cn.hutool.json.JSONUtil;
+import cn.hutool.core.util.StrUtil;
 import com.bobo.comicat.common.base.BaseBean;
-import com.bobo.comicat.common.entity.Comics;
-import com.bobo.comicat.common.entity.Tag;
-import com.bobo.comicat.common.entity.TagQuery;
-import com.bobo.comicat.common.entity.TagView;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_TAGS;
+import static com.bobo.comicat.common.Cache.CACHE_TAGS;
+import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_TAGS;
 
 /**
  * tag
@@ -29,14 +22,23 @@ public class TagService extends BaseBean {
     super(vertx, config);
   }
 
+
   public void getTags(RoutingContext routingContext) {
-    HttpServerRequest request = routingContext.request();
-    TagQuery tagQuery = new TagQuery();
-    tagQuery.setName(request.getParam("name"));
-    tagQuery.setGradeType(request.getParam("gradeType"));
-    eventBus.request(QUERY_TAGS, JsonObject.mapFrom(tagQuery)).onSuccess(su->{
-      List<Tag> list = ((JsonArray) su.body()).stream().map(o -> JSONUtil.toBean(o.toString(), Tag.class)).collect(Collectors.toList());
-      responseSuccess(routingContext.response(),new TagView().setTagList(list));
-    }).onFailure(f -> responseError(routingContext.response(), 500, f.getMessage()));
+    if (CACHE_TAGS.size() < 1) {
+
+      eventBus.request(QUERY_COMICS_TAGS, "").onSuccess(su -> {
+        JsonArray list = (JsonArray) su.body();
+        list.stream().map(l -> (JsonArray) l).map(l -> l.getString(0)).forEach(s -> {
+          for (String s1 : s.split(StrUtil.COMMA)) {
+            if (StrUtil.isNotEmpty(s1)) {
+              CACHE_TAGS.add(s1);
+            }
+          }
+        });
+        responseSuccess(routingContext.response(), CACHE_TAGS);
+      }).onFailure(f -> responseError(routingContext.response(), 500, f.getMessage()));
+    } else {
+      responseSuccess(routingContext.response(), CACHE_TAGS);
+    }
   }
 }

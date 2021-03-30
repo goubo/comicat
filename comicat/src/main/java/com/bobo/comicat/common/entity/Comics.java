@@ -38,23 +38,11 @@ public class Comics {
    */
   private LocalDateTime createTime;
   /**
-   * 源类型
-   */
-  private String resourceType;
-  /**
-   * 原地址
-   */
-  private String resourcePath;
-  /**
-   * 文件类型
-   */
-  private String fileType;
-  /**
-   * 文件路径
-   */
-  private String filePath;
-  /**
    * 封面路径
    */
   private String coverImage;
+  /**
+   * 描述
+   */
+  private String description;
 }

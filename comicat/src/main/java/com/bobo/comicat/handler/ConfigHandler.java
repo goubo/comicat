@@ -30,7 +30,7 @@ public class ConfigHandler extends BaseBean {
   private void writeConfig(Message<JsonObject> message) {
     vertx.fileSystem().mkdirs(new File(CACHE_CONFIG_PATH).getParent())
       .onSuccess(s -> vertx.fileSystem().writeFile(CACHE_CONFIG_PATH, message.body().toBuffer())
-        .onSuccess(message::reply)
+        .onSuccess(su -> message.reply(message.body()))
         .onFailure(f -> message.fail(500, f.getMessage())))
       .onFailure(f -> message.fail(500, f.getMessage()));
   }

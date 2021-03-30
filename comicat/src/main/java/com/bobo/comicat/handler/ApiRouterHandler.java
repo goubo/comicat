@@ -2,6 +2,7 @@ package com.bobo.comicat.handler;
 
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.service.ComicsService;
+import com.bobo.comicat.service.ConfigService;
 import com.bobo.comicat.service.TagService;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -33,10 +34,15 @@ public class ApiRouterHandler extends BaseBean {
   public void router() {
     ComicsService comicsService = new ComicsService(vertx, config);
     TagService tagService = new TagService(vertx, config);
+    ConfigService configService = new ConfigService(vertx, config);
 
     router.get(GET_COMICS).handler(comicsService::getComics);
     router.get(GET_COMICS_IMAGE).handler(comicsService::getComicsImage);
+    router.get(GET_COVER_IMAGE).handler(comicsService::getComicsCover);
     router.get(GET_TAGS).handler(tagService::getTags);
+
+    router.get(CONFIG).handler(configService::getConfig);
+    router.post(CONFIG).handler(configService::setConfig);
 
   }
 
