@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Form, FormInstance, Input, Space, Switch} from "antd";
-import {api} from "../../api";
+import {Api} from "../../Api";
 
 const layout = {
     labelCol: {span: 8},
@@ -30,7 +30,7 @@ export class Setting extends React.Component<any, any> {
     }
 
     componentDidMount() {
-        api.getConfig().then(response => {
+        Api.getConfig().then(response => {
             if (response && response.data) {
                 this.setState({
                     config: response.data,

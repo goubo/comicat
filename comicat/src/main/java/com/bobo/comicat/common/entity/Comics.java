@@ -45,4 +45,8 @@ public class Comics {
    * 描述
    */
   private String description;
+  /**
+   * 分级
+   */
+  private String gradeType;
 }

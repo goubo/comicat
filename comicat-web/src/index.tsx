@@ -6,11 +6,10 @@ import reportWebVitals from './reportWebVitals';
 
 
 ReactDOM.render(
-    <React.StrictMode>
-        <div style={{minHeight: '100vh'}}>
-            <App/>
-        </div>
-    </React.StrictMode>,
+    <div style={{minHeight: '100vh'}}>
+        <App/>
+    </div>
+    ,
     document.getElementById('root')
 );
 

@@ -76,8 +76,31 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     eventBus.consumer(QUERY_COMICS_COUNT, this::queryComicsCount);
     eventBus.consumer(QUERY_COMICS_PAGE, this::queryComicsPage);
     eventBus.consumer(QUERY_COMICS_TAGS, this::queryComicsTags);
+    eventBus.consumer(INSERT_COMICS, this::insertComics);
 
     eventBus.consumer(QUERY_TAGS, this::queryTags);
+
+  }
+
+  private void insertComics(Message<String> message) {
+    ComicsQuery comicsQuery = JSONUtil.toBean(message.body(), ComicsQuery.class);
+    String insertSql = "INSERT INTO comics (comics_name,comics_author,comics_tags,status,create_time,grade_type,cover_image,description) VALUES (?,?,?,?,?,?,?,?);";
+    List<Object> params = new ArrayList<>();
+    params.add(comicsQuery.getComicsName());
+    params.add(comicsQuery.getComicsAuthor());
+    params.add(comicsQuery.getComicsTags());
+    params.add(comicsQuery.getStatus());
+    params.add(comicsQuery.getCreateTime().toString());
+    params.add(comicsQuery.getGradeType());
+    params.add(comicsQuery.getCoverImage());
+    params.add(comicsQuery.getDescription());
+    jdbcClient.querySingleWithParams(insertSql,new JsonArray(params),res->{
+      if (res.succeeded()) {
+        message.reply("");
+      } else {
+        message.fail(500,res.cause().getMessage());
+      }
+    });
 
   }
 
@@ -157,7 +180,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
       if (selectCountRes.succeeded()) {
         message.reply(selectCountRes.result().getInteger(0));
       } else {
-        selectCountRes.cause().printStackTrace();
+        message.fail(500,selectCountRes.cause().getMessage());
       }
     });
   }

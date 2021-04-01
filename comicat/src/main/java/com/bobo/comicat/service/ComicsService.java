@@ -4,6 +4,7 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
+import com.bobo.comicat.common.constant.JdbcConstant;
 import com.bobo.comicat.common.entity.Comics;
 import com.bobo.comicat.common.entity.ComicsQuery;
 import com.bobo.comicat.common.entity.ComicsView;
@@ -14,6 +15,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,13 +69,25 @@ public class ComicsService extends BaseBean {
 
   public void getComicsImage(RoutingContext routingContext) {
     HttpServerResponse response = routingContext.response();
-      response.end();
+    response.end();
   }
 
   public void getComicsCover(RoutingContext routingContext) {
     String path = routingContext.request().getParam("path");
-    routingContext.response().sendFile(config.getString("basePath")+"/cover/"+path).onFailure(
-      f-> responseError(routingContext.response(),404,"图片未找到")
+    routingContext.response().sendFile(config.getString("basePath") + "/cover/" + path).onFailure(
+      f -> responseError(routingContext.response(), 404, "图片未找到")
     );
+  }
+
+  public void addComics(RoutingContext routingContext) {
+    ComicsQuery comicsQuery = JSONUtil.toBean(routingContext.getBodyAsString(), ComicsQuery.class);
+    comicsQuery.setComicsTags(StrUtil.COMMA + comicsQuery.getComicsTagList().stream().map(String::valueOf)
+      .collect(Collectors.joining(StrUtil.COMMA)) + StrUtil.COMMA).setCreateTime(LocalDateTime.now())
+      .setStatus("1").setGradeType("1");
+    eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery)).onSuccess(su -> {
+      Object body = su.body();
+      System.out.println(body);
+      responseSuccess(routingContext.response(), body);
+    }).onFailure(f -> responseError(routingContext.response(), f));
   }
 }

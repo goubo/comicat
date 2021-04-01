@@ -11,14 +11,14 @@ export class ComicsCard extends React.Component<any, any> {
         super(props);
         this.state = {
             comicsList: this.props.comicsList,
-            tagList: this.props.tagList,
+            tagCode: this.props.tagCode,
             addComicsTop: false,
         }
     }
 
     static getDerivedStateFromProps(props: any) {
         return {
-            tagList: props.tagList,
+            tagCode: props.tagCode,
             comicsList: props.comicsList,
         }
     }
@@ -42,7 +42,7 @@ export class ComicsCard extends React.Component<any, any> {
         return (
             <div>
                 <Row style={{paddingTop: '2vh'}}>
-                    <Col offset={1} span={20}> {this.state.tagList}</Col>
+                    <Col offset={1} span={20}> {this.state.tagCode}</Col>
                     <Col>
                         <Space>
                             <Tooltip title="添加">
@@ -78,7 +78,7 @@ export class ComicsCard extends React.Component<any, any> {
 
                 <Modal title="添加漫画" visible={this.state.addComicsTop} onCancel={this.closeAddComicsTop}
                        footer={""}>
-                    <AddComics/>
+                    <AddComics tagsList={this.props.tagsList} close={this.closeAddComicsTop}/>
                 </Modal>
             </div>)
     }

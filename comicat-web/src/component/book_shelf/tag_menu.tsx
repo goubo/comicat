@@ -1,6 +1,6 @@
 import React, {CSSProperties} from 'react';
-import {Checkbox, CheckboxOptionType, Col, Divider, Radio} from "antd";
-import {api} from "../../api";
+import {Checkbox, Col, Divider, Radio} from "antd";
+import {Api} from "../../Api";
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -19,7 +19,6 @@ export class TagMenu extends React.Component<any, any> {
         }
     }
 
-    optionMap: any = {}
     checkedList: string[] = []
     checkedAll = false
     indeterminateAll = false
@@ -45,8 +44,9 @@ export class TagMenu extends React.Component<any, any> {
     handleSizeChange = (tagLogic: any) => this.props.changeTagLogic(tagLogic.target.value);
 
     componentDidMount() {
-        api.getTagList({}).then(response => {
+        Api.getTagList({}).then(response => {
             if (response && response.data) {
+                this.props.setTagsList(response.data)
                 this.setState({
                     options: response.data
                 })

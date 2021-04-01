@@ -1,7 +1,7 @@
 import React from 'react';
 import {Layout} from "antd";
 import {TagMenu} from "./tag_menu";
-import {api} from "../../api";
+import {Api} from "../../Api";
 import {ComicsCard} from "./comics_card";
 
 
@@ -17,10 +17,12 @@ export class BookShelf extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
         this.changeTags = this.changeTags.bind(this);
+        this.setTagsList = this.setTagsList.bind(this);
         this.changeTagLogic = this.changeTagLogic.bind(this);
         this.state = {
             tagCode: [],
-            list: []
+            list: [],
+            tagsList: [],
         }
     }
 
@@ -33,6 +35,12 @@ export class BookShelf extends React.Component<any, any> {
         this.extracted()
     };
 
+    setTagsList = (tagsList: string[]) => {
+        this.setState({
+            tagsList: tagsList
+        })
+    }
+
     changeTags = (menu: any) => {
         this.setState({
             tagCode: menu
@@ -42,7 +50,7 @@ export class BookShelf extends React.Component<any, any> {
     };
 
     private extracted() {
-        api.getComicsList(this.queryParams).then(response => {
+        Api.getComicsList(this.queryParams).then(response => {
             if (response && response.data) {
                 this.setState({
                     list: response.data.comicsList
@@ -69,12 +77,14 @@ export class BookShelf extends React.Component<any, any> {
                     <TagMenu
                         tagLogic={this.queryParams.tagLogic}
                         changeTags={this.changeTags}
+                        setTagsList={this.setTagsList}
                         changeTagLogic={this.changeTagLogic}/>
                 </Sider>
                 <Content>
                     <ComicsCard
                         comicsList={this.state.list}
-                        tagList={"tags:" + this.state.tagCode}
+                        tagCode={"tags:" + this.state.tagCode}
+                        tagsList={this.state.tagsList}
                     />
                 </Content>
             </Layout>

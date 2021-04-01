@@ -31,8 +31,8 @@ export default class TestBOBO extends React.Component<any, any> {
         return (
             <div className="App">
 
-                <Content value={this.initArr[0]} onUpDate={this.totalCountFun}></Content>
-                <Content value={this.initArr[1]} onUpDate={this.totalCountFun}></Content>
+                <Content value={this.initArr[0]} onUpDate={this.totalCountFun}/>
+                <Content value={this.initArr[1]} onUpDate={this.totalCountFun}/>
 
                 <div>
                     总数：{this.state.total}
