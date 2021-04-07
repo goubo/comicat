@@ -11,6 +11,6 @@ import lombok.experimental.Accessors;
  **/
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class TagQuery extends Tag {
 }

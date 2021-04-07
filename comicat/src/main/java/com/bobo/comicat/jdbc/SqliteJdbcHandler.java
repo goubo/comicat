@@ -31,18 +31,17 @@ import static com.bobo.comicat.common.constant.JdbcConstant.*;
  **/
 @Slf4j
 public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
-  public SqliteJdbcHandler(Vertx vertx, JsonObject config) {
-    super(vertx, config);
-  }
-
   private final String[] createTable = {
     "CREATE TABLE IF NOT EXISTS chapter (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER NOT NULL,chapter_name TEXT,status TEXT,chapter_index INTEGER,page_number INTEGER);",
     "CREATE TABLE IF NOT EXISTS comics (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,comics_name TEXT,comics_author TEXT,comics_tags TEXT,status TEXT,create_time DATE,resource_type TEXT,resource_path TEXT,file_type TEXT,file_path TEXT);",
     "CREATE TABLE IF NOT EXISTS reading_record (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER,chapter_id INTEGER,position TEXT,recording_time DATE);",
     "CREATE TABLE IF NOT EXISTS tag (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL);"
   };
-
   private JDBCClient jdbcClient;
+
+  public SqliteJdbcHandler(Vertx vertx, JsonObject config) {
+    super(vertx, config);
+  }
 
   @Override
   public Future<JdbcHandler> init() {
@@ -94,11 +93,11 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     params.add(comicsQuery.getGradeType());
     params.add(comicsQuery.getCoverImage());
     params.add(comicsQuery.getDescription());
-    jdbcClient.querySingleWithParams(insertSql,new JsonArray(params),res->{
+    jdbcClient.querySingleWithParams(insertSql, new JsonArray(params), res -> {
       if (res.succeeded()) {
         message.reply("");
       } else {
-        message.fail(500,res.cause().getMessage());
+        message.fail(500, res.cause().getMessage());
       }
     });
 
@@ -180,7 +179,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
       if (selectCountRes.succeeded()) {
         message.reply(selectCountRes.result().getInteger(0));
       } else {
-        message.fail(500,selectCountRes.cause().getMessage());
+        message.fail(500, selectCountRes.cause().getMessage());
       }
     });
   }
@@ -199,7 +198,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
         whereSql += "comics_tags like '%,' || ? || ',%' ";
         list.add(comicsQuery.getComicsTagList().get(0));
       } else {
-        if (StrUtil.isNotEmpty(comicsQuery.getTagLogic())) {
+        if (StrUtil.isEmpty(comicsQuery.getTagLogic())) {
           comicsQuery.setTagLogic("or");
         }
         whereSql += "(";

@@ -1,5 +1,6 @@
 package com.bobo.comicat.service;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -10,9 +11,11 @@ import com.bobo.comicat.common.entity.ComicsQuery;
 import com.bobo.comicat.common.entity.ComicsView;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.file.CopyOptions;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
 
 import java.time.LocalDateTime;
@@ -20,6 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static cn.hutool.core.util.StrUtil.DASHED;
+import static cn.hutool.core.util.StrUtil.DOT;
+import static com.bobo.comicat.common.Cache.CACHE_TAGS;
+import static com.bobo.comicat.common.constant.Constant.COVER_PATH;
 import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_COUNT;
 import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_PAGE;
 
@@ -74,20 +81,39 @@ public class ComicsService extends BaseBean {
 
   public void getComicsCover(RoutingContext routingContext) {
     String path = routingContext.request().getParam("path");
-    routingContext.response().sendFile(config.getString("basePath") + "/cover/" + path).onFailure(
+    routingContext.response().sendFile(config.getString("basePath") + COVER_PATH + path).onFailure(
       f -> responseError(routingContext.response(), 404, "图片未找到")
     );
   }
 
   public void addComics(RoutingContext routingContext) {
-    ComicsQuery comicsQuery = JSONUtil.toBean(routingContext.getBodyAsString(), ComicsQuery.class);
+    JsonObject jsonObject = new JsonObject();
+    routingContext.request().params().forEach(map -> jsonObject.put(map.getKey(), map.getValue()));
+    ComicsQuery comicsQuery = JSONUtil.toBean(jsonObject.toString(), ComicsQuery.class);
     comicsQuery.setComicsTags(StrUtil.COMMA + comicsQuery.getComicsTagList().stream().map(String::valueOf)
       .collect(Collectors.joining(StrUtil.COMMA)) + StrUtil.COMMA).setCreateTime(LocalDateTime.now())
       .setStatus("1").setGradeType("1");
-    eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery)).onSuccess(su -> {
-      Object body = su.body();
-      System.out.println(body);
-      responseSuccess(routingContext.response(), body);
-    }).onFailure(f -> responseError(routingContext.response(), f));
+    FileUpload[] fileUploads = routingContext.fileUploads().toArray(new FileUpload[1]);
+    if (fileUploads.length > 0) {
+      //移动文件到封面文件夹下
+      FileUpload fileUpload = fileUploads[0];
+      comicsQuery.setCoverImage(comicsQuery.getComicsName() + DASHED + comicsQuery.getComicsAuthor() + DOT + FileUtil.getSuffix(fileUpload.fileName()));
+      vertx.fileSystem().move(fileUpload.uploadedFileName(),
+        config.getString("basePath") + COVER_PATH + comicsQuery.getCoverImage(),
+        new CopyOptions().setReplaceExisting(true))
+        .onSuccess(rs -> eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery))
+          .onSuccess(su -> {
+            Object body = su.body();
+            responseSuccess(routingContext.response(), body);
+            CACHE_TAGS.addAll(comicsQuery.getComicsTagList());
+          }).onFailure(f -> {
+            vertx.fileSystem().delete(fileUpload.uploadedFileName());
+            responseError(routingContext.response(), f);
+          })).onFailure(rf -> {
+        vertx.fileSystem().delete(fileUpload.uploadedFileName());
+        responseError(routingContext.response(), rf);
+      });
+    }
+
   }
 }

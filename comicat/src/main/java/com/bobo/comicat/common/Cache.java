@@ -10,6 +10,5 @@ import java.util.TreeSet;
  * @since 2021/3/26
  **/
 public class Cache {
-
   public static final TreeSet<String> CACHE_TAGS = new TreeSet<>();
 }

@@ -8,6 +8,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 import static com.bobo.comicat.common.Cache.CACHE_TAGS;
+import static com.bobo.comicat.common.constant.Constant.REFRESH;
 import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_TAGS;
 
 /**
@@ -24,8 +25,11 @@ public class TagService extends BaseBean {
 
 
   public void getTags(RoutingContext routingContext) {
-    if (CACHE_TAGS.size() < 1) {
+    if (routingContext.request().params().contains(REFRESH)) {
+      CACHE_TAGS.clear();
+    }
 
+    if (CACHE_TAGS.size() < 1) {
       eventBus.request(QUERY_COMICS_TAGS, "").onSuccess(su -> {
         JsonArray list = (JsonArray) su.body();
         list.stream().map(l -> (JsonArray) l).map(l -> l.getString(0)).forEach(s -> {

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button, Form, FormInstance, Input, Space, Switch} from "antd";
-import {Api} from "../../Api";
+import {Button, Form, FormInstance, Input, Space, Switch} from 'antd';
+import {Api} from '../../Api';
 
 const layout = {
     labelCol: {span: 8},
@@ -52,21 +52,21 @@ export class Setting extends React.Component<any, any> {
         return (<div>
 
                 <Form {...layout} ref={this.formRef}
-                      name="setting"
+                      name='setting'
                 >
                     <Form.Item
-                        label="文件保存路径"
-                        name="basePath">
+                        label='文件保存路径'
+                        name='basePath'>
                         <Input/>
                     </Form.Item>
-                    <Form.Item label="网络代理" name={['proxy', 'enable']} valuePropName="checked">
+                    <Form.Item label='网络代理' name={['proxy', 'enable']} valuePropName='checked'>
                         <Switch onChange={this.proxyEnableChange}/>
                     </Form.Item>
                     {proxyItem(this.state.proxyEnable)}
                     <Form.Item {...tailLayout}>
                         <Space>
-                            <Button type="primary" htmlType="submit" onClick={this.onSubmit}>保存</Button>
-                            <Button onClick={this.onReset} htmlType="submit"><span/>
+                            <Button type='primary' htmlType='submit' onClick={this.onSubmit}>保存</Button>
+                            <Button onClick={this.onReset} htmlType='submit'><span/>
                                 Reset
                             </Button>
                         </Space>
@@ -82,12 +82,12 @@ function proxyItem(proxyEnable: boolean) {
         return (<div>
 
             <Form.Item
-                label="代理服务器ip"
-                name="socket url">
+                label='代理服务器ip'
+                name='socket url'>
                 <Input/>
             </Form.Item>
         </div>)
-    else return ""
+    else return ''
 
 
 }

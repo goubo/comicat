@@ -1,8 +1,8 @@
 import React from 'react';
 
 const countStyle = {
-    margin: "10px",
-    padding: "10px"
+    margin: '10px',
+    padding: '10px'
 }
 
 export default class Content extends React.Component<any, any> {

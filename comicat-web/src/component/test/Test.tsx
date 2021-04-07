@@ -1,5 +1,5 @@
 import React from 'react';
-import Content from "./content";
+import Content from './content';
 
 export default class TestBOBO extends React.Component<any, any> {
     private readonly initArr: number[];
@@ -29,7 +29,7 @@ export default class TestBOBO extends React.Component<any, any> {
 
     render() {
         return (
-            <div className="App">
+            <div className='App'>
 
                 <Content value={this.initArr[0]} onUpDate={this.totalCountFun}/>
                 <Content value={this.initArr[1]} onUpDate={this.totalCountFun}/>

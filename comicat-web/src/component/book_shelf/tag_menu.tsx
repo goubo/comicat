@@ -1,6 +1,6 @@
 import React, {CSSProperties} from 'react';
-import {Checkbox, Col, Divider, Radio} from "antd";
-import {Api} from "../../Api";
+import {Checkbox, Col, Divider, Radio} from 'antd';
+import {Api} from '../../Api';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -61,8 +61,8 @@ export class TagMenu extends React.Component<any, any> {
             <div>
                 <Col>
                     <Radio.Group onChange={this.handleSizeChange} defaultValue={this.props.tagLogic}>
-                        <Radio.Button value="and">与</Radio.Button>
-                        <Radio.Button value="or">或</Radio.Button>
+                        <Radio.Button value='and'>与</Radio.Button>
+                        <Radio.Button value='or'>或</Radio.Button>
                     </Radio.Group>
                 </Col>
                 <Checkbox onChange={this.checkAll} checked={this.checkedAll} indeterminate={this.indeterminateAll}>
@@ -70,7 +70,7 @@ export class TagMenu extends React.Component<any, any> {
                 </Checkbox>
 
                 <Divider/>
-                <CheckboxGroup style={checkboxGroupStyle} name={"tags_check_box"} options={this.state.options}
+                <CheckboxGroup style={checkboxGroupStyle} name={'tags_check_box'} options={this.state.options}
                                value={this.checkedList} onChange={this.onChange}/>
             </div>
         );

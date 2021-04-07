@@ -1,8 +1,8 @@
 import React from 'react';
-import {Layout} from "antd";
-import {TagMenu} from "./tag_menu";
-import {Api} from "../../Api";
-import {ComicsCard} from "./comics_card";
+import {Layout} from 'antd';
+import {TagMenu} from './tag_menu';
+import {Api} from '../../Api';
+import {ComicsCard} from './comics_card';
 
 
 const {Content, Sider} = Layout
@@ -28,7 +28,7 @@ export class BookShelf extends React.Component<any, any> {
 
     queryParams: queryParams = {
         comicsTags: [],
-        tagLogic: "or",
+        tagLogic: 'or',
     }
     changeTagLogic = (tagLogic: string) => {
         this.queryParams.tagLogic = tagLogic
@@ -66,9 +66,9 @@ export class BookShelf extends React.Component<any, any> {
     render() {
         return (
             <Layout>
-                <Sider breakpoint="lg"
-                       collapsedWidth="0"
-                       theme={"light"}
+                <Sider breakpoint='lg'
+                       collapsedWidth='0'
+                       theme={'light'}
                        style={{
                            overflow: 'auto',
                            height: '90vh',
@@ -83,7 +83,7 @@ export class BookShelf extends React.Component<any, any> {
                 <Content>
                     <ComicsCard
                         comicsList={this.state.list}
-                        tagCode={"tags:" + this.state.tagCode}
+                        tagCode={'tags:' + this.state.tagCode}
                         tagsList={this.state.tagsList}
                     />
                 </Content>

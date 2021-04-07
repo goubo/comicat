@@ -1,16 +1,17 @@
 import React from 'react';
-import {Button, Form, FormInstance, Input, Select, Space, Upload} from "antd";
-import {Api} from "../../Api";
+import {Button, Form, FormInstance, Input, Select, Space, Upload} from 'antd';
+import {Api} from '../../Api';
 import {UploadOutlined} from '@ant-design/icons';
 
 const {Option} = Select;
 
 export class AddComics extends React.Component<any, any> {
+
+    coverImage: any
+
     constructor(props: any) {
         super(props);
-        this.state = {
-            coverImage: []
-        }
+        this.state = {}
     }
 
     addFormRef = React.createRef<FormInstance>()
@@ -25,16 +26,19 @@ export class AddComics extends React.Component<any, any> {
     };
 
     onSubmit = () => {
-        console.log(this.addFormRef.current!.getFieldsValue())
-        Api.addComics(this.addFormRef.current!.getFieldsValue()).then(() => {
+        let fields = this.addFormRef.current!.getFieldsValue()
+        let params = new FormData();
+        Object.keys(fields).map((key) => params.set(key, fields[key]))
+        params.set("file", this.coverImage)
+        Api.addComics(params).then(() => {
+            this.onReset()
             this.props.close()
         })
     }
 
     beforeUpload = (file: any) => {
-        this.setState({
-            coverImage: [file],
-        });
+        this.coverImage = file
+        console.log(file)
         return false;
     }
 
@@ -46,25 +50,27 @@ export class AddComics extends React.Component<any, any> {
     render() {
 
         return (
-            <Form ref={this.addFormRef} name="addComics">
+            <Form ref={this.addFormRef} name='addComics'>
                 {this.state.coverImage}
-                <Form.Item label="书名" name="comicsName">
+                <Form.Item label='书名' name='comicsName'>
                     <Input/>
                 </Form.Item>
-                <Form.Item label="作者" name="comicsAuthor">
+                <Form.Item label='作者' name='comicsAuthor'>
                     <Input/>
                 </Form.Item>
-                <Form.Item label="标签" name="comicsTagList">
-                    <Select mode="tags" allowClear>{this.tagsList2Array(this.props.tagsList)}</Select>
+                <Form.Item label='标签' name='comicsTagList'>
+                    <Select mode='tags' allowClear>{this.tagsList2Array(this.props.tagsList)}</Select>
                 </Form.Item>
-                <Upload {...this.uploadProps}>
-                    <Button icon={<UploadOutlined/>}>Upload png only</Button>
-                </Upload>
+                <Form.Item name="coverImage">
+                    <Upload {...this.uploadProps}>
+                        <Button icon={<UploadOutlined/>}>Upload png only</Button>
+                    </Upload>
+                </Form.Item>
 
                 <Form.Item>
                     <Space>
-                        <Button type="primary" htmlType="submit" onClick={this.onSubmit}>保存</Button>
-                        <Button onClick={this.onReset} htmlType="submit"><span/>
+                        <Button type='primary' htmlType='submit' onClick={this.onSubmit}>保存</Button>
+                        <Button onClick={this.onReset} htmlType='submit'><span/>
                             Reset
                         </Button>
                     </Space>

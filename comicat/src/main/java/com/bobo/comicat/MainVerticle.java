@@ -16,11 +16,11 @@ import static com.bobo.comicat.common.constant.Constant.EVENT_BUS_LOAD_CONFIG;
 public class MainVerticle extends AbstractVerticle {
 
 
+  private EventBus eventBus;
+
   public static void main(String[] args) {
     Vertx.vertx().deployVerticle(MainVerticle.class.getName());
   }
-
-  private EventBus eventBus;
 
   @Override
   public void start(Promise<Void> startPromise) {
