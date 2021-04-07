@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Form, FormInstance, Input, Space, Switch} from 'antd';
+import {Button, Form, FormInstance, Input, InputNumber, Space, Switch, Popover, message} from 'antd';
 import {Api} from '../../Api';
 
 const layout = {
@@ -26,7 +26,9 @@ export class Setting extends React.Component<any, any> {
     };
 
     onSubmit = () => {
-        console.log(this.formRef.current!.getFieldsValue())
+        Api.setConfig(this.formRef.current!.getFieldsValue()).then(() => {
+            message.success("保存成功").then(null)
+        })
     }
 
     componentDidMount() {
@@ -54,11 +56,14 @@ export class Setting extends React.Component<any, any> {
                 <Form {...layout} ref={this.formRef}
                       name='setting'
                 >
-                    <Form.Item
-                        label='文件保存路径'
-                        name='basePath'>
+                    <Form.Item label='文件保存路径' name='basePath'>
                         <Input/>
                     </Form.Item>
+                    <Popover content="9至81" title="每页显示漫画数量">
+                        <Form.Item label='每页显示漫画数量' name='pageSize'>
+                            <InputNumber min={9} max={81} keyboard/>
+                        </Form.Item>
+                    </Popover>
                     <Form.Item label='网络代理' name={['proxy', 'enable']} valuePropName='checked'>
                         <Switch onChange={this.proxyEnableChange}/>
                     </Form.Item>
@@ -74,7 +79,7 @@ export class Setting extends React.Component<any, any> {
                 </Form>
             </div>
         )
-     }
+    }
 }
 
 function proxyItem(proxyEnable: boolean) {

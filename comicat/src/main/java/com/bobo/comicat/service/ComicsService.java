@@ -50,7 +50,7 @@ public class ComicsService extends BaseBean {
     comicsQuery.setTagLogic(StrUtil.isEmpty(params.get("tagLogic")) ? "or" : params.get("tagLogic"));
     comicsQuery.setPageNumber(NumberUtil.parseInt(params.get("pageNumber")));
     if (comicsQuery.getPageSize() == 0) {
-      comicsQuery.setPageSize(config.getInteger("page_size", 18));
+      comicsQuery.setPageSize(config.getInteger("pageSize", 18));
     }
     if (comicsQuery.getPageNumber() < 1) {
       comicsQuery.setPageNumber(1);
@@ -63,9 +63,7 @@ public class ComicsService extends BaseBean {
         responseSuccess(routingContext.response(), comicsView);
       } else {
         comicsQuery.setTotal(count);
-        //查询数据
         eventBus.request(QUERY_COMICS_PAGE, comicsQueryJson).onSuccess(su -> {
-
           List<Comics> list = ((JsonArray) su.body()).stream().map(o -> JSONUtil.toBean(o.toString(), Comics.class)).collect(Collectors.toList());
           ComicsView comicsView = new ComicsView().setComicsQuery(comicsQuery).setComicsList(list);
           responseSuccess(routingContext.response(), comicsView);

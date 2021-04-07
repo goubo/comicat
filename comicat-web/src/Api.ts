@@ -52,6 +52,11 @@ export class Api extends React.Component<any, any> {
         method: 'GET',
         url: '/config',
     })
+    static setConfig = (params: any) => request({
+        url: '/config',
+        method: 'POST',
+        data: params,
+    })
 
 
 }
