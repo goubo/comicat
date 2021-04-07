@@ -1,7 +1,9 @@
 import React from 'react';
-import {Button, Card, Col, Modal, Radio, Row, Space, Tooltip} from 'antd';
+import {Button, Card, Col, Image, Modal, Radio, Row, Space, Tooltip} from 'antd';
 import {PlusCircleOutlined} from '@ant-design/icons';
 import {AddComics} from './add_comics';
+import {Constant} from '../../constant';
+import {ComicsInfo} from "./comics_info";
 
 const {Meta} = Card;
 
@@ -13,6 +15,8 @@ export class ComicsCard extends React.Component<any, any> {
             comicsList: this.props.comicsList,
             tagCode: this.props.tagCode,
             addComicsTop: false,
+            showComicsInfoTop: false,
+            comicsInfo: {},
         }
     }
 
@@ -31,9 +35,20 @@ export class ComicsCard extends React.Component<any, any> {
             addComicsTop: true,
         })
     }
+    clickComics = (item: object) => {
+        this.setState({
+            comicsInfo: item,
+            showComicsInfoTop: true,
+        })
+    }
     closeAddComicsTop = () => {
         this.setState({
             addComicsTop: false,
+        })
+    }
+    closeComicsInfoTop = () => {
+        this.setState({
+            showComicsInfoTop: false,
         })
     }
 
@@ -60,16 +75,20 @@ export class ComicsCard extends React.Component<any, any> {
                 <Space wrap align={'baseline'}>
                     {this.state.comicsList.map((item: any, index: number) => {
                         return (
-                            <Card key={index} hoverable>
-                                <img
+                            <Card key={index} hoverable style={{whiteSpace: 'pre-wrap'}}
+                                  onClick={this.clickComics.bind(this, item)}>
+                                <Image
                                     width={200}
                                     alt='example'
+                                    preview={false}
+                                    fallback={Constant.default_image}
                                     src={'/api/comics/cover/' + item.coverImage}
                                 />
 
                                 <Meta
                                     title={item.comicsName}
-                                    description={item.description}
+                                    // description={"作者:" + item.comicsAuthor + "\n" + (item.description ? item.description : "")}
+                                    description={item.comicsAuthor}
                                 />
                             </Card>
                         )
@@ -80,8 +99,10 @@ export class ComicsCard extends React.Component<any, any> {
                        footer={''}>
                     <AddComics tagsList={this.props.tagsList} close={this.closeAddComicsTop}/>
                 </Modal>
+                <Modal title='漫画详情' visible={this.state.showComicsInfoTop} onCancel={this.closeComicsInfoTop}
+                       footer={''}>
+                    <ComicsInfo value={this.state.comicsInfo} close={this.closeComicsInfoTop}/>
+                </Modal>
             </div>)
     }
-
-
 }

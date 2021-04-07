@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Form, FormInstance, Input, Select, Space, Upload} from 'antd';
 import {Api} from '../../Api';
 import {UploadOutlined} from '@ant-design/icons';
+import TextArea from 'antd/lib/input/TextArea';
 
 const {Option} = Select;
 
@@ -61,10 +62,13 @@ export class AddComics extends React.Component<any, any> {
                 <Form.Item label='标签' name='comicsTagList'>
                     <Select mode='tags' allowClear>{this.tagsList2Array(this.props.tagsList)}</Select>
                 </Form.Item>
-                <Form.Item name="coverImage">
+                <Form.Item label='封面'>
                     <Upload {...this.uploadProps}>
                         <Button icon={<UploadOutlined/>}>Upload png only</Button>
                     </Upload>
+                </Form.Item>
+                <Form.Item name='coverImage' label='描述'>
+                    <TextArea showCount maxLength={100}/>
                 </Form.Item>
 
                 <Form.Item>

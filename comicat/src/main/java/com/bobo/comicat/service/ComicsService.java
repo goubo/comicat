@@ -50,7 +50,7 @@ public class ComicsService extends BaseBean {
     comicsQuery.setTagLogic(StrUtil.isEmpty(params.get("tagLogic")) ? "or" : params.get("tagLogic"));
     comicsQuery.setPageNumber(NumberUtil.parseInt(params.get("pageNumber")));
     if (comicsQuery.getPageSize() == 0) {
-      comicsQuery.setPageSize(config.getInteger("page_size", 12));
+      comicsQuery.setPageSize(config.getInteger("page_size", 18));
     }
     if (comicsQuery.getPageNumber() < 1) {
       comicsQuery.setPageNumber(1);
@@ -81,9 +81,8 @@ public class ComicsService extends BaseBean {
 
   public void getComicsCover(RoutingContext routingContext) {
     String path = routingContext.request().getParam("path");
-    routingContext.response().sendFile(config.getString("basePath") + COVER_PATH + path).onFailure(
-      f -> responseError(routingContext.response(), 404, "图片未找到")
-    );
+    routingContext.response().sendFile(config.getString("basePath") + COVER_PATH + path)
+      .onFailure(f -> responseError(routingContext.response(), 404, "图片未找到"));
   }
 
   public void addComics(RoutingContext routingContext) {
