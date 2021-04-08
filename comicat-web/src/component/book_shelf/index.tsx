@@ -14,6 +14,11 @@ interface queryParams {
 
 export class BookShelf extends React.Component<any, any> {
 
+    queryParams: queryParams = {
+        comicsTags: [],
+        tagLogic: 'or',
+    }
+
     constructor(props: any) {
         super(props);
         this.changeTags = this.changeTags.bind(this);
@@ -26,10 +31,6 @@ export class BookShelf extends React.Component<any, any> {
         }
     }
 
-    queryParams: queryParams = {
-        comicsTags: [],
-        tagLogic: 'or',
-    }
     changeTagLogic = (tagLogic: string) => {
         this.queryParams.tagLogic = tagLogic
         this.extracted()
@@ -48,16 +49,6 @@ export class BookShelf extends React.Component<any, any> {
         this.queryParams.comicsTags = menu
         this.extracted()
     };
-
-    private extracted() {
-        Api.getComicsList(this.queryParams).then(response => {
-            if (response && response.data) {
-                this.setState({
-                    list: response.data.comicsList
-                })
-            }
-        })
-    }
 
     componentDidMount() {
         this.extracted();
@@ -78,5 +69,15 @@ export class BookShelf extends React.Component<any, any> {
                 </Content>
             </Layout>
         )
+    }
+
+    private extracted() {
+        Api.getComicsList(this.queryParams).then(response => {
+            if (response && response.data) {
+                this.setState({
+                    list: response.data.comicsList
+                })
+            }
+        })
     }
 }

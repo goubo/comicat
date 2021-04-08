@@ -8,11 +8,11 @@ const {Option} = Select;
 
 export class ComicsEdit extends React.Component<any, any> {
 
+    addFormRef = React.createRef<FormInstance>()
     private coverImage: any
     private comicsInfo = {
         comicsTags: ''
     }
-
 
     constructor(props: any) {
         super(props);
@@ -23,7 +23,6 @@ export class ComicsEdit extends React.Component<any, any> {
         this.props.onRef(this)
     }
 
-    addFormRef = React.createRef<FormInstance>()
     tagsList2Array = (tagsList: any) => {
         const array: JSX.Element[] = [];
         tagsList.map((s: string) => array.push(<Option key={s} value={s}>{s}</Option>))
@@ -94,7 +93,6 @@ export class ComicsEdit extends React.Component<any, any> {
                 <Form.Item name='description' label='描述'>
                     <TextArea showCount maxLength={100}/>
                 </Form.Item>
-
                 <Form.Item>
                     <Space>
                         <Button type='primary' htmlType='submit' onClick={this.onSubmit}>保存</Button>

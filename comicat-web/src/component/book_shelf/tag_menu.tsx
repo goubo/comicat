@@ -12,17 +12,16 @@ const checkboxGroupStyle: CSSProperties = {
 
 export class TagMenu extends React.Component<any, any> {
 
+    checkedList: string[] = []
+    checkedAll = false
+    indeterminateAll = false
+
     constructor(props: any) {
         super(props);
         this.state = {
             options: []
         }
     }
-
-    checkedList: string[] = []
-    checkedAll = false
-    indeterminateAll = false
-
 
     onChange = (e: any) => {
         this.checkedList = e
@@ -47,14 +46,10 @@ export class TagMenu extends React.Component<any, any> {
         Api.getTagList({}).then(response => {
             if (response && response.data) {
                 this.props.setTagsList(response.data)
-                this.setState({
-                    options: response.data
-                })
-
+                this.setState({options: response.data})
             }
         })
     }
-
 
     render() {
         return (
@@ -68,7 +63,6 @@ export class TagMenu extends React.Component<any, any> {
                 <Checkbox onChange={this.checkAll} checked={this.checkedAll} indeterminate={this.indeterminateAll}>
                     Check all
                 </Checkbox>
-
                 <Divider/>
                 <CheckboxGroup style={checkboxGroupStyle} name={'tags_check_box'} options={this.state.options}
                                value={this.checkedList} onChange={this.onChange}/>

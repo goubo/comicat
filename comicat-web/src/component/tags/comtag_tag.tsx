@@ -4,7 +4,7 @@ import {Tag} from 'antd';
 export class ComTagTag extends React.Component<any, any> {
     render() {
         if (!this.props.value) return <></>
-        if (typeof this.props.value === 'object' )
+        if (typeof this.props.value === 'object')
             return this.props.value.map((s: string) => {
                 return <Tag key={s} style={{marginBottom: '1vh'}}>{s}</Tag>
             })

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Form, FormInstance, Input, InputNumber, Space, Switch, Popover, message} from 'antd';
+import {Button, Form, FormInstance, Input, InputNumber, message, Popover, Space, Switch} from 'antd';
 import {Api} from '../../Api';
 
 const layout = {
@@ -12,6 +12,8 @@ const tailLayout = {
 
 export class Setting extends React.Component<any, any> {
 
+    formRef = React.createRef<FormInstance>()
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -20,7 +22,6 @@ export class Setting extends React.Component<any, any> {
         }
     }
 
-    formRef = React.createRef<FormInstance>()
     onReset = () => {
         this.formRef.current!.resetFields()
     };
