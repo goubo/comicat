@@ -37,6 +37,15 @@ export class Api extends React.Component<any, any> {
         }
     })
 
+    static updateComics = (data: any) => request({
+        url: '/comics',
+        method: 'PATCH',
+        data: data,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+    })
+
 
     static addComics = (data: any) => request({
         url: '/comics',

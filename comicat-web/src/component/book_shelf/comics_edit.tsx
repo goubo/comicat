@@ -6,13 +6,21 @@ import TextArea from 'antd/lib/input/TextArea';
 
 const {Option} = Select;
 
-export class AddComics extends React.Component<any, any> {
+export class ComicsEdit extends React.Component<any, any> {
 
-    coverImage: any
+    private coverImage: any
+    private comicsInfo = {
+        comicsTags: ""
+    }
+
 
     constructor(props: any) {
         super(props);
         this.state = {}
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
     }
 
     addFormRef = React.createRef<FormInstance>()
@@ -20,6 +28,21 @@ export class AddComics extends React.Component<any, any> {
         const array: JSX.Element[] = [];
         tagsList.map((s: string) => array.push(<Option key={s} value={s}>{s}</Option>))
         return array
+    }
+
+    loadForm = (comics: any) => {
+        this.comicsInfo = comics
+        if (comics) {
+            comics['comicsTagList'] = comics.comicsTags.split(',').filter((s: string) => s)
+            this.addFormRef.current!.setFieldsValue(comics)
+        } else {
+            this.addFormRef.current!.setFieldsValue({
+                "comicsName": "",
+                "comicsAuthor": "",
+                "comicsTags": "",
+                "description": "",
+            })
+        }
     }
 
     onReset = () => {
@@ -39,20 +62,21 @@ export class AddComics extends React.Component<any, any> {
 
     beforeUpload = (file: any) => {
         this.coverImage = file
-        console.log(file)
         return false;
+    }
+    uploadRemove = () => {
+
     }
 
     uploadProps = {
         beforeUpload: this.beforeUpload,
-        maxCount: 1
+        maxCount: 1,
+        onRemove: this.uploadRemove,
     }
 
     render() {
-
         return (
-            <Form ref={this.addFormRef} name='addComics'>
-                {this.state.coverImage}
+            <Form ref={this.addFormRef} name='addComics' initialValues={this.props.value}>
                 <Form.Item label='书名' name='comicsName'>
                     <Input/>
                 </Form.Item>
@@ -64,19 +88,17 @@ export class AddComics extends React.Component<any, any> {
                 </Form.Item>
                 <Form.Item label='封面'>
                     <Upload {...this.uploadProps}>
-                        <Button icon={<UploadOutlined/>}>Upload png only</Button>
+                        <Button icon={<UploadOutlined/>}>选择封面图片</Button>
                     </Upload>
                 </Form.Item>
-                <Form.Item name='coverImage' label='描述'>
+                <Form.Item name='description' label='描述'>
                     <TextArea showCount maxLength={100}/>
                 </Form.Item>
 
                 <Form.Item>
                     <Space>
                         <Button type='primary' htmlType='submit' onClick={this.onSubmit}>保存</Button>
-                        <Button onClick={this.onReset} htmlType='submit'><span/>
-                            Reset
-                        </Button>
+                        <Button onClick={this.onReset} htmlType='submit'>重置</Button>
                     </Space>
                 </Form.Item>
             </Form>

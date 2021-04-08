@@ -76,9 +76,13 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     eventBus.consumer(QUERY_COMICS_PAGE, this::queryComicsPage);
     eventBus.consumer(QUERY_COMICS_TAGS, this::queryComicsTags);
     eventBus.consumer(INSERT_COMICS, this::insertComics);
+    eventBus.consumer(UPDATE_COMICS, this::updateComics);
 
     eventBus.consumer(QUERY_TAGS, this::queryTags);
 
+  }
+
+  private void updateComics(Message<String> tMessage) {
   }
 
   private void insertComics(Message<String> message) {

@@ -66,26 +66,15 @@ export class BookShelf extends React.Component<any, any> {
     render() {
         return (
             <Layout>
-                <Sider breakpoint='lg'
-                       collapsedWidth='0'
-                       theme={'light'}
-                       style={{
-                           overflow: 'auto',
-                           height: '90vh',
-                           left: 0,
-                       }}>
+                <Sider breakpoint='lg' collapsedWidth='0' theme={'light'}
+                       style={{overflow: 'auto', height: '90vh', left: 0,}}>
                     <TagMenu
-                        tagLogic={this.queryParams.tagLogic}
-                        changeTags={this.changeTags}
-                        setTagsList={this.setTagsList}
+                        tagLogic={this.queryParams.tagLogic} changeTags={this.changeTags} setTagsList={this.setTagsList}
                         changeTagLogic={this.changeTagLogic}/>
                 </Sider>
                 <Content>
-                    <ComicsCard
-                        comicsList={this.state.list}
-                        tagCode={'tags:' + this.state.tagCode}
-                        tagsList={this.state.tagsList}
-                    />
+                    <ComicsCard comicsList={this.state.list} tagCode={this.state.tagCode}
+                                tagsList={this.state.tagsList}/>
                 </Content>
             </Layout>
         )

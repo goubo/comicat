@@ -83,6 +83,20 @@ public class ComicsService extends BaseBean {
       .onFailure(f -> responseError(routingContext.response(), 404, "图片未找到"));
   }
 
+  public void updateComics(RoutingContext routingContext) {
+    JsonObject jsonObject = new JsonObject();
+    routingContext.request().params().forEach(map -> jsonObject.put(map.getKey(), map.getValue()));
+    ComicsQuery comicsQuery = JSONUtil.toBean(jsonObject.toString(), ComicsQuery.class);
+    comicsQuery.setComicsTags(StrUtil.COMMA + comicsQuery.getComicsTagList().stream().map(String::valueOf)
+      .collect(Collectors.joining(StrUtil.COMMA)) + StrUtil.COMMA);
+    FileUpload[] fileUploads = routingContext.fileUploads().toArray(new FileUpload[1]);
+    Comics comics = JSONUtil.toBean(routingContext.request().getParam("old"), Comics.class);
+    //更新数据,更换封面
+
+
+
+  }
+
   public void addComics(RoutingContext routingContext) {
     JsonObject jsonObject = new JsonObject();
     routingContext.request().params().forEach(map -> jsonObject.put(map.getKey(), map.getValue()));

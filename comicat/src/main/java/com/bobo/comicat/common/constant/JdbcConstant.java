@@ -12,6 +12,7 @@ public class JdbcConstant {
   public static final String QUERY_COMICS_COUNT = "jdbc.query.comicsCount";
   public static final String QUERY_COMICS_PAGE = "jdbc.query.comicsPage";
   public static final String INSERT_COMICS = "jdbc.insert.comics";
+  public static final String UPDATE_COMICS = "jdbc.update.comics";
 
 
   public static final String QUERY_TAGS = "jdbc.query.Tags";
