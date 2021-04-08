@@ -27,7 +27,7 @@ export class Setting extends React.Component<any, any> {
 
     onSubmit = () => {
         Api.setConfig(this.formRef.current!.getFieldsValue()).then(() => {
-            message.success("保存成功").then(null)
+            message.success('保存成功').then(null)
         })
     }
 
@@ -59,7 +59,7 @@ export class Setting extends React.Component<any, any> {
                     <Form.Item label='文件保存路径' name='basePath'>
                         <Input/>
                     </Form.Item>
-                    <Popover content="9至81" title="每页显示漫画数量">
+                    <Popover content='9至81' title='每页显示漫画数量'>
                         <Form.Item label='每页显示漫画数量' name='pageSize'>
                             <InputNumber min={9} max={81} keyboard/>
                         </Form.Item>

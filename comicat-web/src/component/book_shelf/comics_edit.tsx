@@ -10,7 +10,7 @@ export class ComicsEdit extends React.Component<any, any> {
 
     private coverImage: any
     private comicsInfo = {
-        comicsTags: ""
+        comicsTags: ''
     }
 
 
@@ -37,10 +37,10 @@ export class ComicsEdit extends React.Component<any, any> {
             this.addFormRef.current!.setFieldsValue(comics)
         } else {
             this.addFormRef.current!.setFieldsValue({
-                "comicsName": "",
-                "comicsAuthor": "",
-                "comicsTags": "",
-                "description": "",
+                'comicsName': '',
+                'comicsAuthor': '',
+                'comicsTags': '',
+                'description': '',
             })
         }
     }
@@ -53,7 +53,7 @@ export class ComicsEdit extends React.Component<any, any> {
         let fields = this.addFormRef.current!.getFieldsValue()
         let params = new FormData();
         Object.keys(fields).map((key) => params.set(key, fields[key]))
-        params.set("file", this.coverImage)
+        params.set('file', this.coverImage)
         Api.addComics(params).then(() => {
             this.onReset()
             this.props.close()

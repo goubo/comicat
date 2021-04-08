@@ -1,5 +1,5 @@
-import React from "react"
-import {Tag} from "antd";
+import React from 'react'
+import {Tag} from 'antd';
 
 export class ComTagTag extends React.Component<any, any> {
     render() {

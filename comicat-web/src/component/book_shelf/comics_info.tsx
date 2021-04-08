@@ -1,7 +1,7 @@
-import {Button, Col, Image, Row, Space} from "antd";
-import React from "react";
-import {Constant} from "../../constant";
-import {ComTagTag} from "../tags/comtag_tag";
+import {Button, Col, Image, Row, Space} from 'antd';
+import React from 'react';
+import {Constant} from '../../constant';
+import {ComTagTag} from '../tags/comtag_tag';
 
 export class ComicsInfo extends React.Component<any, any> {
 

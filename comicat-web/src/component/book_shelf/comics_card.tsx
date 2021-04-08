@@ -3,8 +3,8 @@ import {Button, Card, Col, Image, Modal, Radio, Row, Space, Tooltip} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons';
 import {ComicsEdit} from './comics_edit';
 import {Constant} from '../../constant';
-import {ComicsInfo} from "./comics_info";
-import {ComTagTag} from "../tags/comtag_tag";
+import {ComicsInfo} from './comics_info';
+import {ComTagTag} from '../tags/comtag_tag';
 
 const {Meta} = Card;
 
@@ -33,13 +33,19 @@ export class ComicsCard extends React.Component<any, any> {
     handleSizeChange = (e: any) => {
         console.log(e.target.value)
     }
+    loadFormTimer = () => {
+        if (this.comicsEditRef)
+            this.comicsEditRef.loadForm(this.state.comicsInfo)
+        else
+            this.loadFormTimer()
+    }
+
     showAddComicsTop = (source: any) => {
         this.setState({
             addComicsTop: true,
         })
         if (!source) {
-            if (this.comicsEditRef)
-                this.comicsEditRef.loadForm(this.state.comicsInfo)
+            setTimeout(() => this.loadFormTimer(), 50)
         } else {
             if (this.comicsEditRef)
                 this.comicsEditRef.loadForm(undefined)
@@ -107,7 +113,8 @@ export class ComicsCard extends React.Component<any, any> {
                 </Row>
                 <Modal title='添加漫画' visible={this.state.addComicsTop} style={{zIndex: 20}}
                        onCancel={this.closeAddComicsTop} footer={''}>
-                    <ComicsEdit onRef={this.onComicsEditRef} value={this.state.comicsInfo} tagsList={this.props.tagsList}
+                    <ComicsEdit onRef={this.onComicsEditRef} value={this.state.comicsInfo}
+                                tagsList={this.props.tagsList}
                                 close={this.closeAddComicsTop}/>
                 </Modal>
                 <Modal title='漫画详情' visible={this.state.showComicsInfoTop} style={{zIndex: 10}}
