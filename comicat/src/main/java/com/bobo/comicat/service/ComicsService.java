@@ -27,8 +27,7 @@ import static cn.hutool.core.util.StrUtil.DASHED;
 import static cn.hutool.core.util.StrUtil.DOT;
 import static com.bobo.comicat.common.Cache.CACHE_TAGS;
 import static com.bobo.comicat.common.constant.Constant.COVER_PATH;
-import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_COUNT;
-import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_PAGE;
+import static com.bobo.comicat.common.constant.JdbcConstant.*;
 
 /**
  * 漫画类
@@ -91,8 +90,21 @@ public class ComicsService extends BaseBean {
       .collect(Collectors.joining(StrUtil.COMMA)) + StrUtil.COMMA);
     FileUpload[] fileUploads = routingContext.fileUploads().toArray(new FileUpload[1]);
     Comics comics = JSONUtil.toBean(routingContext.request().getParam("old"), Comics.class);
-    //更新数据,更换封面
+    if (fileUploads[0] == null) {
+      if (!comicsQuery.getComicsName().equals(comics.getComicsName()) && StrUtil.isNotEmpty(comics.getCoverImage())) {
+        comicsQuery.setCoverImage(comicsQuery.getComicsName() + DOT + FileUtil.getSuffix(comics.getCoverImage()));
+      }
+      eventBus.request(UPDATE_COMICS, JSONUtil.toJsonStr(comicsQuery)).onSuccess(su -> {
+        if (StrUtil.isNotEmpty(comics.getCoverImage()) && StrUtil.isNotEmpty(comicsQuery.getCoverImage())
+          && !comicsQuery.getCoverImage().equals(comics.getCoverImage())) {
+          vertx.fileSystem().move(config.getString("basePath") + COVER_PATH + comics.getCoverImage(),
+            config.getString("basePath") + COVER_PATH + comicsQuery.getCoverImage());
+          responseSuccess(routingContext.response(), comicsQuery);
+        }
+      }).onFailure(f -> responseError(routingContext.response(), f));
+    } else {
 
+    }
 
 
   }
@@ -124,6 +136,13 @@ public class ComicsService extends BaseBean {
         vertx.fileSystem().delete(fileUpload.uploadedFileName());
         responseError(routingContext.response(), rf);
       });
+    } else {
+      eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery))
+        .onSuccess(su -> {
+          Object body = su.body();
+          responseSuccess(routingContext.response(), body);
+          CACHE_TAGS.addAll(comicsQuery.getComicsTagList());
+        }).onFailure(f -> responseError(routingContext.response(), f));
     }
 
   }

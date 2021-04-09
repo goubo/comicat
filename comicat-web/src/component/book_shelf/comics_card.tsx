@@ -74,7 +74,6 @@ export class ComicsCard extends React.Component<any, any> {
     }
 
     render() {
-
         return (
             <div>
                 <Row style={{padding: '2vh'}}>
@@ -111,13 +110,13 @@ export class ComicsCard extends React.Component<any, any> {
                         </Space>
                     </Col>
                 </Row>
-                <Modal title='添加漫画' visible={this.state.addComicsTop} style={{zIndex: 20}}
+                <Modal title='添加漫画' visible={this.state.addComicsTop} zIndex={20}
                        onCancel={this.closeAddComicsTop} footer={''}>
                     <ComicsEdit onRef={this.onComicsEditRef} value={this.state.comicsInfo}
                                 tagsList={this.props.tagsList}
                                 close={this.closeAddComicsTop}/>
                 </Modal>
-                <Modal title='漫画详情' visible={this.state.showComicsInfoTop} style={{zIndex: 10}}
+                <Modal title='漫画详情' visible={this.state.showComicsInfoTop} zIndex={10}
                        onCancel={this.closeComicsInfoTop} footer={''}>
                     <ComicsInfo value={this.state.comicsInfo}
                                 showAddComicsTop={this.showAddComicsTop}

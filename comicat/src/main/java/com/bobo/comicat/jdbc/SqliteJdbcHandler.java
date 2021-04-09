@@ -82,7 +82,52 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
 
   }
 
-  private void updateComics(Message<String> tMessage) {
+  private void updateComics(Message<String> message) {
+    ComicsQuery comicsQuery = JSONUtil.toBean(message.body(), ComicsQuery.class);
+    if (comicsQuery.getId() == null) {
+      message.fail(500, "id为空");
+      return;
+    }
+    JsonArray jsonArray = new JsonArray();
+    List<String> list = new ArrayList<>();
+    if (StrUtil.isNotEmpty(comicsQuery.getComicsName())) {
+      list.add("comics_name = ?");
+      jsonArray.add(comicsQuery.getComicsName());
+    }
+    if (StrUtil.isNotEmpty(comicsQuery.getComicsAuthor())) {
+      list.add("comics_author = ?");
+      jsonArray.add(comicsQuery.getComicsAuthor());
+    }
+    if (StrUtil.isNotEmpty(comicsQuery.getComicsTags())) {
+      list.add("comics_tags = ?");
+      jsonArray.add(comicsQuery.getComicsTags());
+    }
+    if (StrUtil.isNotEmpty(comicsQuery.getCoverImage())) {
+      list.add("cover_image = ?");
+      jsonArray.add(comicsQuery.getCoverImage());
+    }
+    if (StrUtil.isNotEmpty(comicsQuery.getDescription())) {
+      list.add("description = ?");
+      jsonArray.add(comicsQuery.getDescription());
+    }
+    if (StrUtil.isNotEmpty(comicsQuery.getStatus())) {
+      list.add("status = ?");
+      jsonArray.add(comicsQuery.getStatus());
+    }
+    if (StrUtil.isNotEmpty(comicsQuery.getGradeType())) {
+      list.add("grade_type = ?");
+      jsonArray.add(comicsQuery.getGradeType());
+    }
+    String updateSql = "UPDATE comics SET " + list.stream().collect(Collectors.joining(",")) + " where id = ?";
+    jsonArray.add(comicsQuery.getId());
+    jdbcClient.querySingleWithParams(updateSql, jsonArray, res -> {
+      if (res.succeeded()) {
+        message.reply("");
+      } else {
+        message.fail(500, res.cause().getMessage());
+      }
+    });
+
   }
 
   private void insertComics(Message<String> message) {

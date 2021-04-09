@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, Form, FormInstance, Input, Select, Space, Upload} from 'antd';
-import {Api} from '../../Api';
 import {UploadOutlined} from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
+import {Api} from '../../Api';
 
 const {Option} = Select;
 
@@ -11,7 +11,8 @@ export class ComicsEdit extends React.Component<any, any> {
     addFormRef = React.createRef<FormInstance>()
     private coverImage: any
     private comicsInfo = {
-        comicsTags: ''
+        comicsTags: '',
+        id: '',
     }
 
     constructor(props: any) {
@@ -40,6 +41,7 @@ export class ComicsEdit extends React.Component<any, any> {
                 'comicsAuthor': '',
                 'comicsTags': '',
                 'description': '',
+                'comicsTagList': [],
             })
         }
     }
@@ -53,10 +55,19 @@ export class ComicsEdit extends React.Component<any, any> {
         let params = new FormData();
         Object.keys(fields).map((key) => params.set(key, fields[key]))
         params.set('file', this.coverImage)
-        Api.addComics(params).then(() => {
-            this.onReset()
-            this.props.close()
-        })
+        if (this.comicsInfo) {
+            params.set("id", this.comicsInfo.id)
+            params.set('old', JSON.stringify(this.comicsInfo))
+            Api.updateComics(params).then(() => {
+                this.onReset()
+                this.props.close()
+            })
+        } else {
+            Api.addComics(params).then(() => {
+                this.onReset()
+                this.props.close()
+            })
+        }
     }
 
     beforeUpload = (file: any) => {
