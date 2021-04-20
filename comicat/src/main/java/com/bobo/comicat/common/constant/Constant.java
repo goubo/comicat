@@ -8,6 +8,18 @@ package com.bobo.comicat.common.constant;
  * @since 2021/3/19
  **/
 public class Constant {
+  /**
+   * 读取缓冲长度 1 << 18  256KB
+   */
+  public static final int TEMP_LEN_18 = 2 << 18;
+  /**
+   * 读取缓冲长度 1<< 20   1MB
+   */
+  public static final int TEMP_LEN_20 = 1 << 20;
+
+  /**
+   * 刷新tag的参数
+   */
   public static final String REFRESH = "refresh";
 
   public static final String COVER_PATH = "/cover/";

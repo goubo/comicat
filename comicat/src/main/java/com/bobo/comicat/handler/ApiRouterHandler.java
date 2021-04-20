@@ -3,10 +3,14 @@ package com.bobo.comicat.handler;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.service.ComicsService;
 import com.bobo.comicat.service.ConfigService;
+import com.bobo.comicat.service.FileService;
 import com.bobo.comicat.service.TagService;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
 import static com.bobo.comicat.common.constant.ApiConstant.*;
@@ -44,6 +48,18 @@ public class ApiRouterHandler extends BaseBean {
     router.get(CONFIG).handler(configService::getConfig);
     router.post(CONFIG).handler(configService::setConfig);
 
+    router.get("/testFile").handler(this::testFile);
+
+  }
+
+  private void testFile(RoutingContext routingContext) {
+    FileService instance = FileService.getInstance(vertx, config);
+    HttpServerRequest request = routingContext.request();
+    String path = request.getParam("path");
+    String seek = request.getParam("seek");
+    String str = request.getParam("str");
+    instance.insertFile(path, Integer.parseInt(seek), Buffer.buffer(str));
+    routingContext.response().end("i'm here");
   }
 
   private Router getRouter() {

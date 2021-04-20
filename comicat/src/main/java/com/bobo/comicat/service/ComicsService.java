@@ -103,6 +103,13 @@ public class ComicsService extends BaseBean {
         }
       }).onFailure(f -> responseError(routingContext.response(), f));
     } else {
+      comicsQuery.setCoverImage(comicsQuery.getComicsName() + DOT + FileUtil.getSuffix(fileUploads[0].fileName()));
+      eventBus.request(UPDATE_COMICS, JSONUtil.toJsonStr(comicsQuery)).onSuccess(su -> {
+        vertx.fileSystem().move(fileUploads[0].uploadedFileName(),
+          config.getString("basePath") + COVER_PATH + comicsQuery.getCoverImage());
+        vertx.fileSystem().delete(config.getString("basePath") + COVER_PATH + comics.getCoverImage());
+        responseSuccess(routingContext.response(), comicsQuery);
+      }).onFailure(f -> responseError(routingContext.response(), f));
 
     }
 
@@ -117,7 +124,7 @@ public class ComicsService extends BaseBean {
       .collect(Collectors.joining(StrUtil.COMMA)) + StrUtil.COMMA).setCreateTime(LocalDateTime.now())
       .setStatus("1").setGradeType("1");
     FileUpload[] fileUploads = routingContext.fileUploads().toArray(new FileUpload[1]);
-    if (fileUploads.length > 0) {
+    if (fileUploads[0] != null) {
       //移动文件到封面文件夹下
       FileUpload fileUpload = fileUploads[0];
       comicsQuery.setCoverImage(comicsQuery.getComicsName() + DASHED + comicsQuery.getComicsAuthor() + DOT + FileUtil.getSuffix(fileUpload.fileName()));
