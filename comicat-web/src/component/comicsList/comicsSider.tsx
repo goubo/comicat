@@ -1,6 +1,5 @@
 import React, {CSSProperties} from 'react';
 import {Checkbox, Col, Divider, Radio} from 'antd';
-import {Api} from '../../Api';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -10,46 +9,40 @@ const checkboxGroupStyle: CSSProperties = {
 }
 
 
-export class TagMenu extends React.Component<any, any> {
+export class ComicsSider extends React.Component<any, any> {
 
     checkedList: string[] = []
     checkedAll = false
+    tagLogic = this.props.tagLogic
     indeterminateAll = false
 
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            options: []
-        }
-    }
 
     onChange = (e: any) => {
         this.checkedList = e
-        this.checkedAll = this.checkedList.length === this.state.options.length
-        this.indeterminateAll = this.checkedList.length > 0 && this.checkedList.length < this.state.options.length
-        this.props.changeTags(e)
+        this.checkedAll = this.checkedList.length === this.props.tagsList.length
+        this.indeterminateAll = this.checkedList.length > 0 && this.checkedList.length < this.props.tagsList.length
+        this.returnQueryParams()
     }
     checkAll = (e: any) => {
         if (e.target.checked) {
-            this.checkedList = this.state.options
+            this.checkedList = this.props.tagsList
         } else {
             this.checkedList = []
         }
         this.checkedAll = e.target.checked
         this.indeterminateAll = false
-        this.props.changeTags(this.checkedList)
+        this.returnQueryParams()
     }
 
-    handleSizeChange = (tagLogic: any) => this.props.changeTagLogic(tagLogic.target.value);
+    handleSizeChange = (tagLogic: any) => {
+        this.tagLogic = tagLogic.target.value
+        this.returnQueryParams()
+    };
 
-    componentDidMount() {
-        Api.getTagList({}).then(response => {
-            if (response && response.data) {
-                this.props.setTagsList(response.data)
-                this.setState({options: response.data})
-            }
-        })
+    returnQueryParams = () => {
+        this.props.changeQueryParams({tagLogic: this.tagLogic, comicsTags: this.checkedList})
     }
+
 
     render() {
         return (
@@ -64,7 +57,7 @@ export class TagMenu extends React.Component<any, any> {
                     Check all
                 </Checkbox>
                 <Divider/>
-                <CheckboxGroup style={checkboxGroupStyle} name={'tags_check_box'} options={this.state.options}
+                <CheckboxGroup style={checkboxGroupStyle} name={'tags_check_box'} options={this.props.tagsList}
                                value={this.checkedList} onChange={this.onChange}/>
             </div>
         );

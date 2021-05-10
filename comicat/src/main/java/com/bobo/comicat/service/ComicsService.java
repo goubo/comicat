@@ -99,8 +99,8 @@ public class ComicsService extends BaseBean {
           && !comicsQuery.getCoverImage().equals(comics.getCoverImage())) {
           vertx.fileSystem().move(basePath + COVER_PATH + comics.getCoverImage(),
             basePath + COVER_PATH + comicsQuery.getCoverImage());
-          responseSuccess(routingContext.response(), comicsQuery);
         }
+        responseSuccess(routingContext.response(), comicsQuery);
       }).onFailure(f -> responseError(routingContext.response(), f));
     } else {
       comicsQuery.setCoverImage(comicsQuery.getComicsName() + DOT + FileUtil.getSuffix(fileUploads[0].fileName()));
