@@ -8,6 +8,11 @@ package com.bobo.comicat.common.constant;
  * @since 2021/3/21
  **/
 public class JdbcConstant {
+  public static final String WHERE = " where ";
+  public static final String AND = " and ";
+  public static final String OR = " or ";
+
+
   public static final String QUERY_COMICS_TAGS = "jdbc.query.comicsTags";
   public static final String QUERY_COMICS_COUNT = "jdbc.query.comicsCount";
   public static final String QUERY_COMICS_PAGE = "jdbc.query.comicsPage";

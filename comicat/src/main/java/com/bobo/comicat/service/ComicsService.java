@@ -78,7 +78,7 @@ public class ComicsService extends BaseBean {
 
   public void getComicsCover(RoutingContext routingContext) {
     String path = routingContext.request().getParam("path");
-    routingContext.response().sendFile(config.getString("basePath") + COVER_PATH + path)
+    routingContext.response().sendFile(basePath + COVER_PATH + path)
       .onFailure(f -> responseError(routingContext.response(), 404, "图片未找到"));
   }
 
@@ -97,8 +97,8 @@ public class ComicsService extends BaseBean {
       eventBus.request(UPDATE_COMICS, JSONUtil.toJsonStr(comicsQuery)).onSuccess(su -> {
         if (StrUtil.isNotEmpty(comics.getCoverImage()) && StrUtil.isNotEmpty(comicsQuery.getCoverImage())
           && !comicsQuery.getCoverImage().equals(comics.getCoverImage())) {
-          vertx.fileSystem().move(config.getString("basePath") + COVER_PATH + comics.getCoverImage(),
-            config.getString("basePath") + COVER_PATH + comicsQuery.getCoverImage());
+          vertx.fileSystem().move(basePath + COVER_PATH + comics.getCoverImage(),
+            basePath + COVER_PATH + comicsQuery.getCoverImage());
           responseSuccess(routingContext.response(), comicsQuery);
         }
       }).onFailure(f -> responseError(routingContext.response(), f));
@@ -106,8 +106,8 @@ public class ComicsService extends BaseBean {
       comicsQuery.setCoverImage(comicsQuery.getComicsName() + DOT + FileUtil.getSuffix(fileUploads[0].fileName()));
       eventBus.request(UPDATE_COMICS, JSONUtil.toJsonStr(comicsQuery)).onSuccess(su -> {
         vertx.fileSystem().move(fileUploads[0].uploadedFileName(),
-          config.getString("basePath") + COVER_PATH + comicsQuery.getCoverImage());
-        vertx.fileSystem().delete(config.getString("basePath") + COVER_PATH + comics.getCoverImage());
+          basePath + COVER_PATH + comicsQuery.getCoverImage());
+        vertx.fileSystem().delete(basePath + COVER_PATH + comics.getCoverImage());
         responseSuccess(routingContext.response(), comicsQuery);
       }).onFailure(f -> responseError(routingContext.response(), f));
 
@@ -129,7 +129,7 @@ public class ComicsService extends BaseBean {
       FileUpload fileUpload = fileUploads[0];
       comicsQuery.setCoverImage(comicsQuery.getComicsName() + DASHED + comicsQuery.getComicsAuthor() + DOT + FileUtil.getSuffix(fileUpload.fileName()));
       vertx.fileSystem().move(fileUpload.uploadedFileName(),
-        config.getString("basePath") + COVER_PATH + comicsQuery.getCoverImage(),
+        basePath + COVER_PATH + comicsQuery.getCoverImage(),
         new CopyOptions().setReplaceExisting(true))
         .onSuccess(rs -> eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery))
           .onSuccess(su -> {

@@ -41,7 +41,7 @@ public class ConfigHandler extends BaseBean {
       if (s.booleanValue()) {//TODO 覆盖用户设置
         configRetriever(message, CACHE_CONFIG_PATH, false);
       } else {
-        configRetriever(message, "def-conf.json", true);
+        configRetriever(message, DEF_CONF_DOT_JSON, true);
       }
     }).onFailure(f -> f.printStackTrace());
   }
@@ -49,7 +49,7 @@ public class ConfigHandler extends BaseBean {
 
   private void configRetriever(Message<JsonObject> message, String cacheConfigPath, boolean writeConfig) {
     ConfigRetrieverOptions options = new ConfigRetrieverOptions();
-    options.addStore(new ConfigStoreOptions().setType("file").setConfig(new JsonObject().put("path", cacheConfigPath)));
+    options.addStore(new ConfigStoreOptions().setType(FILE).setConfig(new JsonObject().put(PATH, cacheConfigPath)));
     ConfigRetriever.create(vertx, options).getConfig(conf -> {
       if (conf.succeeded()) {
         config.clear();

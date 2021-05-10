@@ -19,12 +19,14 @@ public abstract class BaseBean {
   protected Vertx vertx;
   protected EventBus eventBus;
   protected JsonObject config;
+  protected String basePath;
 
 
   protected BaseBean(Vertx vertx, JsonObject config) {
     this.vertx = vertx;
     this.config = config;
     this.eventBus = vertx.eventBus();
+    this.basePath = config.getString("basePath");
   }
 
   protected void responseSuccess(HttpServerResponse response, Object object) {

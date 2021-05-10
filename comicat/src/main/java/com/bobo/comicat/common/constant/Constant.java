@@ -17,13 +17,16 @@ public class Constant {
    */
   public static final int TEMP_LEN_20 = 1 << 20;
 
+  public static final String PATH = "path";
+  public static final String FILE = "file";
+  public static final String DEF_CONF_DOT_JSON = "def-conf.json";
+
   /**
    * 刷新tag的参数
    */
   public static final String REFRESH = "refresh";
 
   public static final String COVER_PATH = "/cover/";
-
   public static final String HOME_PATH = System.getProperty("user.home");
   public static final String CACHE_PATH = HOME_PATH + "/.cache/comicat";
   public static final String CACHE_UPLOAD_PATH = CACHE_PATH + "/upload";

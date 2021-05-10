@@ -70,8 +70,6 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
 
   @Override
   public void registrationService() {
-    log.info("registrationService");
-    //查询漫画列表 分页
     eventBus.consumer(QUERY_COMICS_COUNT, this::queryComicsCount);
     eventBus.consumer(QUERY_COMICS_PAGE, this::queryComicsPage);
     eventBus.consumer(QUERY_COMICS_TAGS, this::queryComicsTags);
@@ -175,13 +173,13 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     }
     if (StrUtil.isNotEmpty(tagQuery.getGradeType())) {
       if (StrUtil.isNotEmpty(whereSql)) {
-        whereSql += " and ";
+        whereSql += AND;
       }
       whereSql += "grade_type = ?";
       params.add(tagQuery.getGradeType());
     }
     if (StrUtil.isNotEmpty(whereSql)) {
-      select += " where ";
+      select += WHERE;
       select += whereSql;
     }
     jdbcClient.queryWithParams(select, new JsonArray(params), res -> {
@@ -201,7 +199,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     List<Object> list = new ArrayList<>();
     String whereSql = getComicsWhereSql(comicsQuery, list);
     if (StrUtil.isNotEmpty(whereSql)) {
-      selectPage += " where " + whereSql;
+      selectPage += WHERE + whereSql;
     }
     selectPage += " limit ?,?";
     list.add((comicsQuery.getPageNumber() - 1) * comicsQuery.getPageSize());
@@ -222,7 +220,7 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     List<Object> list = new ArrayList<>();
     String whereSql = getComicsWhereSql(comicsQuery, list);
     if (StrUtil.isNotEmpty(whereSql)) {
-      selectCount += " where " + whereSql;
+      selectCount += WHERE + whereSql;
     }
     jdbcClient.querySingleWithParams(selectCount, new JsonArray(list), selectCountRes -> {
       if (selectCountRes.succeeded()) {
@@ -242,13 +240,13 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     if (CollectionUtil.isNotEmpty(comicsQuery.getComicsTagList())) {
       if (comicsQuery.getComicsTagList().size() == 1) {
         if (StrUtil.isNotEmpty(whereSql)) {
-          whereSql += " and ";
+          whereSql += AND;
         }
         whereSql += "comics_tags like '%,' || ? || ',%' ";
         list.add(comicsQuery.getComicsTagList().get(0));
       } else {
         if (StrUtil.isEmpty(comicsQuery.getTagLogic())) {
-          comicsQuery.setTagLogic("or");
+          comicsQuery.setTagLogic(OR);
         }
         whereSql += "(";
         String and = comicsQuery.getComicsTagList().stream().map(s -> {
