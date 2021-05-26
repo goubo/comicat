@@ -1,10 +1,7 @@
 package com.bobo.comicat.handler;
 
 import com.bobo.comicat.common.base.BaseBean;
-import com.bobo.comicat.service.ComicsService;
-import com.bobo.comicat.service.ConfigService;
-import com.bobo.comicat.service.FileService;
-import com.bobo.comicat.service.TagService;
+import com.bobo.comicat.service.*;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -37,13 +34,18 @@ public class ApiRouterHandler extends BaseBean {
     ComicsService comicsService = new ComicsService(vertx, config);
     TagService tagService = new TagService(vertx, config);
     ConfigService configService = new ConfigService(vertx, config);
-
+    ChapterService chapterService = new ChapterService(vertx, config);
     router.get(COMICS).handler(comicsService::getComics);
     router.post(COMICS).handler(comicsService::addComics);
     router.patch(COMICS).handler(comicsService::updateComics);
-    router.get(GET_COMICS_IMAGE).handler(comicsService::getComicsImage);
-    router.get(GET_COVER_IMAGE).handler(comicsService::getComicsCover);
+
+
+    router.get(COMICS_IMAGE).handler(comicsService::getComicsImage);
+    router.get(COMICS_COVER_PATH).handler(comicsService::getComicsCover);
     router.get(GET_TAGS).handler(tagService::getTags);
+
+    router.post(CHAPTER_UPLOAD).handler(chapterService::upload);
+    router.post(CHAPTER).handler(chapterService::addChapter);
 
     router.get(CONFIG).handler(configService::getConfig);
     router.post(CONFIG).handler(configService::setConfig);

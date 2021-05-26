@@ -38,12 +38,12 @@ public class ConfigHandler extends BaseBean {
 
   private void readConfig(Message<JsonObject> message) {
     vertx.fileSystem().exists(CACHE_CONFIG_PATH).onSuccess(s -> {
-      if (s.booleanValue()) {//TODO 覆盖用户设置
+      if (s) {//TODO 覆盖用户设置
         configRetriever(message, CACHE_CONFIG_PATH, false);
       } else {
         configRetriever(message, DEF_CONF_DOT_JSON, true);
       }
-    }).onFailure(f -> f.printStackTrace());
+    }).onFailure(Throwable::printStackTrace);
   }
 
 

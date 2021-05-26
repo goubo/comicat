@@ -19,6 +19,13 @@ public class Constant {
 
   public static final String PATH = "path";
   public static final String FILE = "file";
+  public static final String ZIP = "zip";
+  public static final String PDF = "pdf";
+  public static final String MOBI = "mobi";
+  public static final String EPUB = "epub";
+
+
+
   public static final String DEF_CONF_DOT_JSON = "def-conf.json";
 
   /**

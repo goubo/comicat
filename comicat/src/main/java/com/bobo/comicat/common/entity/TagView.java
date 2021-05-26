@@ -1,6 +1,7 @@
 package com.bobo.comicat.common.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  **/
 @Data
 @Accessors(chain = true)
-public class TagView {
-
+@EqualsAndHashCode(callSuper = true)
+public class TagView extends Tag {
   private List<Tag> tagList;
 }

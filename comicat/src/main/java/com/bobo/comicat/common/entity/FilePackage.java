@@ -1,6 +1,7 @@
 package com.bobo.comicat.common.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 文件结构定义
@@ -10,6 +11,7 @@ import lombok.Data;
  * @since 2021/4/20
  **/
 @Data
+@Accessors(chain = true)
 public class FilePackage {
   /**
    * 名称
@@ -21,9 +23,9 @@ public class FilePackage {
   private String comicsAuthor;
 
   /**
-   * 封面图片长度
+   * 封面图片
    */
-  private int coverLength;
+  private long coverSize;
   /**
    * 章节名称
    */
@@ -31,7 +33,7 @@ public class FilePackage {
   /**
    * 章节页码
    */
-  private int chapterPageSize;
+  private int chapterPageNum;
   /**
    * 页下标索引 ,每张图片的开头,需要加上包头长度和封面长度
    */

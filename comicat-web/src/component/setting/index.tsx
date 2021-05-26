@@ -86,7 +86,6 @@ export class Setting extends React.Component<any, any> {
 function proxyItem(proxyEnable: boolean) {
     if (proxyEnable)
         return (<div>
-
             <Form.Item
                 label='代理服务器ip'
                 name='socket url'>

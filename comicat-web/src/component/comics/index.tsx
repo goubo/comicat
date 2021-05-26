@@ -5,6 +5,7 @@ import {Api} from '../../Api';
 import {ComicsContent} from './comicsContent';
 import {ComicsEdit} from "./comicsEdit";
 import {ComicsInfo} from './comicsInfo';
+import {ChapterImport} from "./chapterImport";
 
 
 const {Content, Sider} = Layout
@@ -25,15 +26,13 @@ export class ComicsList extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
-        this.changeQueryParams = this.changeQueryParams.bind(this);
-        this.showEditComicsModal = this.showEditComicsModal.bind(this);
-        this.showComicsInfoModal = this.showComicsInfoModal.bind(this);
         this.state = {
             comicsList: [],
             tagsList: [],
             editComicsTitle: "",
             editComicsVisible: false,
             comicsInfoVisible: false,
+            importChapterVisible: false,
             comicsInfo: {},
             queryParams: {
                 comicsTags: [],
@@ -62,10 +61,9 @@ export class ComicsList extends React.Component<any, any> {
             editComicsVisible: false,
         })
         this.getComicsList()
-
     }
     /**
-     *
+     * 显示漫画详情
      */
     showComicsInfoModal = (comicsInfo: ComicsInfoModal) => {
         this.setState({
@@ -76,6 +74,20 @@ export class ComicsList extends React.Component<any, any> {
     closeComicsInfoModal = () => {
         this.setState({
             comicsInfoVisible: false,
+            comicsInfo: {}
+        })
+    }
+    /**
+     * 显示导入漫画
+     */
+    showImportChapterModal = () => {
+        this.setState({
+            importChapterVisible: true
+        })
+    }
+    closeImportChapterModal = () => {
+        this.setState({
+            importChapterVisible: false
         })
     }
     //左侧修改查询条件
@@ -129,7 +141,9 @@ export class ComicsList extends React.Component<any, any> {
             <ComicsEdit {...this.state} closeEditComicsModal={this.closeEditComicsModal} onRef={this.onComicsEditRef}
                         showEditComicsModal={this.showEditComicsModal}/>
             <ComicsInfo {...this.state} closeComicsInfoModal={this.closeComicsInfoModal}
-                        showEditComicsModal={this.showEditComicsModal}/>
+                        showEditComicsModal={this.showEditComicsModal}
+                        showImportChapterModal={this.showImportChapterModal}/>
+            <ChapterImport {...this.state} closeImportChapterModal={this.closeImportChapterModal}/>
 
         </>
 

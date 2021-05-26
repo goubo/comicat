@@ -2,6 +2,7 @@ import {Button, Col, Image, Modal, Row, Space} from 'antd';
 import React from 'react';
 import {Constant} from '../../constant';
 import {ComTagTag} from '../tags/comtag_tag';
+import {ChapterList} from "./chapterList";
 
 export class ComicsInfo extends React.Component<any, any> {
 
@@ -16,7 +17,6 @@ export class ComicsInfo extends React.Component<any, any> {
                     <Col>
                         <Space>
                             <Button size='small' onClick={this.editComics}>修改描述</Button>
-                            <Button size='small'>导入章节</Button>
                         </Space>
                     </Col>
                 </Row>
@@ -32,12 +32,7 @@ export class ComicsInfo extends React.Component<any, any> {
                         <Row>标签 : <ComTagTag value={this.props.comicsInfo.comicsTags}/></Row>
                     </Col>
                 </Row>
-                <Row>
-                    <Col>章节</Col>
-                </Row>
-                <Row>
-                    <Col>章节</Col>
-                </Row>
+                <ChapterList showImportChapterModal={this.props.showImportChapterModal}/>
             </Modal>
         </>);
     }

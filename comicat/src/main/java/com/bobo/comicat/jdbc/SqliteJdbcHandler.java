@@ -32,7 +32,7 @@ import static com.bobo.comicat.common.constant.JdbcConstant.*;
 @Slf4j
 public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
   private final String[] createTable = {
-    "CREATE TABLE IF NOT EXISTS chapter (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER NOT NULL,chapter_name TEXT,status TEXT,chapter_index INTEGER,page_number INTEGER);",
+    "CREATE TABLE IF NOT EXISTS chapter (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER NOT NULL,chapter_index INTEGER,chapter_name TEXT,status TEXT,page_number INTEGER,file_type TEXT,file_path TEXT,chapter_path TEXT,chapter_type TEXT);",
     "CREATE TABLE IF NOT EXISTS comics (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,comics_name TEXT,comics_author TEXT,comics_tags TEXT,status TEXT,create_time DATE,resource_type TEXT,resource_path TEXT,file_type TEXT,file_path TEXT);",
     "CREATE TABLE IF NOT EXISTS reading_record (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER,chapter_id INTEGER,position TEXT,recording_time DATE);",
     "CREATE TABLE IF NOT EXISTS tag (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL);"

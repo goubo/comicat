@@ -3,7 +3,7 @@ import {Tabs} from 'antd';
 import './App.css';
 import TestBOBO from './component/test/Test';
 import {Setting} from './component/setting';
-import {ComicsList} from './component/comicsList';
+import {ComicsList} from './component/comics';
 
 const {TabPane} = Tabs;
 

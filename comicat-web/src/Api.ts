@@ -56,6 +56,12 @@ export class Api extends React.Component<any, any> {
         },
     })
 
+    static addChapter = (data: any) => request({
+        url: '/chapter',
+        method: 'POST',
+        data: data
+    })
+
 
     static getConfig = () => request({
         method: 'GET',

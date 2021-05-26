@@ -128,13 +128,11 @@ public class ComicsService extends BaseBean {
       //移动文件到封面文件夹下
       FileUpload fileUpload = fileUploads[0];
       comicsQuery.setCoverImage(comicsQuery.getComicsName() + DASHED + comicsQuery.getComicsAuthor() + DOT + FileUtil.getSuffix(fileUpload.fileName()));
-      vertx.fileSystem().move(fileUpload.uploadedFileName(),
-        basePath + COVER_PATH + comicsQuery.getCoverImage(),
+      vertx.fileSystem().move(fileUpload.uploadedFileName(), basePath + COVER_PATH + comicsQuery.getCoverImage(),
         new CopyOptions().setReplaceExisting(true))
         .onSuccess(rs -> eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery))
           .onSuccess(su -> {
-            Object body = su.body();
-            responseSuccess(routingContext.response(), body);
+            responseSuccess(routingContext.response(), su.body());
             CACHE_TAGS.addAll(comicsQuery.getComicsTagList());
           }).onFailure(f -> {
             vertx.fileSystem().delete(fileUpload.uploadedFileName());
@@ -146,11 +144,12 @@ public class ComicsService extends BaseBean {
     } else {
       eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery))
         .onSuccess(su -> {
-          Object body = su.body();
-          responseSuccess(routingContext.response(), body);
+          responseSuccess(routingContext.response(), su.body());
           CACHE_TAGS.addAll(comicsQuery.getComicsTagList());
         }).onFailure(f -> responseError(routingContext.response(), f));
     }
-
   }
+
+  //解析zip文件列表,文件数量信息
+  
 }
