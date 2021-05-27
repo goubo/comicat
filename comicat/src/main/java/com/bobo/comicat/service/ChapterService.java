@@ -73,7 +73,6 @@ public class ChapterService extends BaseBean {
     ChapterQuery chapterQuery = JSONUtil.toBean(bodyAsString, ChapterQuery.class);
     fileService.zipToFilePackage(chapterQuery).onFailure(f -> responseError(routingContext.response(), f))
       .onSuccess(json -> {
-        System.out.println(json);
         responseSuccess(routingContext.response(), "success");
       });
 

@@ -1,4 +1,4 @@
-package com.bobo.comicat.common;
+package com.bobo.comicat.common.util;
 
 import java.util.TreeSet;
 
@@ -9,6 +9,6 @@ import java.util.TreeSet;
  * @date 2021-03-26 16:09
  * @since 2021/3/26
  **/
-public class Cache {
+public class CacheUtil {
   public static final TreeSet<String> CACHE_TAGS = new TreeSet<>();
 }

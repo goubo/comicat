@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
-import static com.bobo.comicat.common.Cache.CACHE_TAGS;
+import static com.bobo.comicat.common.util.CacheUtil.CACHE_TAGS;
 import static com.bobo.comicat.common.constant.Constant.REFRESH;
 import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_TAGS;
 

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 import static cn.hutool.core.util.StrUtil.DASHED;
 import static cn.hutool.core.util.StrUtil.DOT;
-import static com.bobo.comicat.common.Cache.CACHE_TAGS;
+import static com.bobo.comicat.common.util.CacheUtil.CACHE_TAGS;
 import static com.bobo.comicat.common.constant.Constant.COVER_PATH;
 import static com.bobo.comicat.common.constant.JdbcConstant.*;
 
@@ -151,5 +151,5 @@ public class ComicsService extends BaseBean {
   }
 
   //解析zip文件列表,文件数量信息
-  
+
 }

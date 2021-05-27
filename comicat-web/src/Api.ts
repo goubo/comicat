@@ -10,6 +10,12 @@ const client = axios.create({
 
 });
 
+export interface ResultData {
+    code: number,
+    msg: string,
+    data: any
+}
+
 
 function request(config: AxiosRequestConfig) {
     return client.request(config).catch(e => {

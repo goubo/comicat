@@ -1,7 +1,7 @@
 import React from 'react';
 import {Layout} from 'antd';
 import {ComicsSider} from './comicsSider';
-import {Api} from '../../Api';
+import {Api, ResultData} from '../../Api';
 import {ComicsContent} from './comicsContent';
 import {ComicsEdit} from "./comicsEdit";
 import {ComicsInfo} from './comicsInfo';
@@ -101,25 +101,23 @@ export class ComicsList extends React.Component<any, any> {
     componentDidMount() {
         this.getComicsList();
         Api.getTagList({}).then(response => {
-            if (response && response.data) {
-                this.setState({tagsList: response.data})
-            }
+            let data: ResultData = response?.data
+            this.setState({tagsList: data.data})
         })
     }
 
     private getComicsList() {
         Api.getComicsList(this.state.queryParams).then(response => {
-            if (response && response.data) {
-                this.setState({
-                    comicsList: response.data.comicsList
+            let data: ResultData = response?.data
+            this.setState({
+                comicsList: data.data.comicsList
+            })
+            if (this.state.comicsInfo.id) {
+                data.data.comicsList.forEach((c: { id: any; }) => {
+                    if (c.id === this.state.comicsInfo.id) {
+                        this.setState({comicsInfo: c})
+                    }
                 })
-                if (this.state.comicsInfo.id) {
-                    response.data.comicsList.forEach((c: { id: any; }) => {
-                        if (c.id === this.state.comicsInfo.id) {
-                            this.setState({comicsInfo: c})
-                        }
-                    })
-                }
             }
         })
     }
