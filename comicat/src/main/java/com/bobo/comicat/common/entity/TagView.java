@@ -1,7 +1,7 @@
 package com.bobo.comicat.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -12,8 +12,12 @@ import java.util.List;
  * @since 2021/3/23
  **/
 @Data
+@Builder
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class TagView extends Tag {
+public class TagView {
   private List<Tag> tagList;
+  private Integer id;
+  private String name;
+  private String gradeType;
+  private String type;
 }

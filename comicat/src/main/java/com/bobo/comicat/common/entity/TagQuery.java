@@ -1,7 +1,7 @@
 package com.bobo.comicat.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -10,7 +10,11 @@ import lombok.experimental.Accessors;
  * @since 2021/3/23
  **/
 @Data
+@Builder
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class TagQuery extends Tag {
+public class TagQuery {
+  private Integer id;
+  private String name;
+  private String gradeType;
+  private String type;
 }

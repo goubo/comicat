@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.base.MyCompositeFuture;
+import com.bobo.comicat.common.entity.Chapter;
 import com.bobo.comicat.common.entity.ComicsQuery;
 import com.bobo.comicat.common.entity.TagQuery;
 import com.bobo.comicat.handler.JdbcHandler;
@@ -32,7 +33,7 @@ import static com.bobo.comicat.common.constant.JdbcConstant.*;
 @Slf4j
 public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
   private final String[] createTable = {
-    "CREATE TABLE IF NOT EXISTS chapter (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER NOT NULL,chapter_index INTEGER,chapter_name TEXT,status TEXT,page_number INTEGER,file_type TEXT,file_path TEXT,chapter_path TEXT,chapter_type TEXT);",
+    "CREATE TABLE IF NOT EXISTS chapter (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER NOT NULL,chapter_index INTEGER,chapter_name TEXT,status TEXT,page_number INTEGER,file_type TEXT,file_path TEXT,chapter_path TEXT,chapter_type TEXT)",
     "CREATE TABLE IF NOT EXISTS comics (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,comics_name TEXT,comics_author TEXT,comics_tags TEXT,status TEXT,create_time DATE,resource_type TEXT,resource_path TEXT,file_type TEXT,file_path TEXT);",
     "CREATE TABLE IF NOT EXISTS reading_record (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,comics_id INTEGER,chapter_id INTEGER,position TEXT,recording_time DATE);",
     "CREATE TABLE IF NOT EXISTS tag (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL);"
@@ -76,7 +77,33 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     eventBus.consumer(INSERT_COMICS, this::insertComics);
     eventBus.consumer(UPDATE_COMICS, this::updateComics);
 
+    eventBus.consumer(INSERT_CHAPTER, this::insertChapter);
+
     eventBus.consumer(QUERY_TAGS, this::queryTags);
+
+
+  }
+
+  private void insertChapter(Message<String> message) {
+    Chapter chapter = JSONUtil.toBean(message.body(), Chapter.class);
+    String insertSql = "INSERT INTO chapter (comics_id,chapter_index,chapter_name,status,page_number,file_type,file_path,chapter_path,chapter_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    List<Object> params = new ArrayList<>();
+    params.add(chapter.getComicsId());
+    params.add(chapter.getChapterIndex());
+    params.add(chapter.getChapterName());
+    params.add(chapter.getStatus());
+    params.add(chapter.getPageNumber());
+    params.add(chapter.getFileType());
+    params.add(chapter.getFilePath());
+    params.add(chapter.getChapterPath());
+    params.add(chapter.getChapterType());
+    jdbcClient.querySingleWithParams(insertSql, new JsonArray(params), res -> {
+      if (res.succeeded()) {
+        message.reply("");
+      } else {
+        message.fail(500, res.cause().getMessage());
+      }
+    });
 
   }
 

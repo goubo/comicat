@@ -25,7 +25,6 @@ public class Constant {
   public static final String EPUB = "epub";
 
 
-
   public static final String DEF_CONF_DOT_JSON = "def-conf.json";
 
   /**

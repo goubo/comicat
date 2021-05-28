@@ -1,5 +1,6 @@
 package com.bobo.comicat.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  * @since 2021/3/22
  **/
 @Data
+@Builder
 @Accessors(chain = true)
 public class Comics {
   /**

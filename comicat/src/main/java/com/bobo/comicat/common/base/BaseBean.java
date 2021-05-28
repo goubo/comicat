@@ -4,7 +4,6 @@ import com.bobo.comicat.common.entity.Result;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 
 import static com.bobo.comicat.common.constant.ApiConstant.*;

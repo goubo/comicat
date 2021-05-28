@@ -1,9 +1,10 @@
 package com.bobo.comicat.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -15,9 +16,9 @@ import java.util.List;
  **/
 
 @Data
+@Builder
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class ComicsQuery extends Comics {
+public class ComicsQuery {
   /**
    * 其他查询条件
    */
@@ -51,5 +52,42 @@ public class ComicsQuery extends Comics {
    * 总条数
    */
   private int total;
+
+  /**
+   * id
+   */
+  private Integer id;
+  /**
+   * 名称
+   */
+  private String comicsName;
+  /**
+   * 作者
+   */
+  private String comicsAuthor;
+  /**
+   * 标签
+   */
+  private String comicsTags;
+  /**
+   * 漫画状态
+   */
+  private String status;
+  /**
+   * 录入时间
+   */
+  private LocalDateTime createTime;
+  /**
+   * 封面路径
+   */
+  private String coverImage;
+  /**
+   * 描述
+   */
+  private String description;
+  /**
+   * 分级
+   */
+  private String gradeType;
 }
 

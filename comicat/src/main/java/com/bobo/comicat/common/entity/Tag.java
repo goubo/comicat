@@ -1,5 +1,6 @@
 package com.bobo.comicat.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,6 +12,7 @@ import lombok.experimental.Accessors;
  * @since 2021/3/23
  **/
 @Data
+@Builder
 @Accessors(chain = true)
 public class Tag {
   private Integer id;

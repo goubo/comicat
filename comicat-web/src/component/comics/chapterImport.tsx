@@ -1,7 +1,7 @@
 import {Button, Col, Divider, Form, FormInstance, Input, InputNumber, message, Modal, Radio, Row, Upload} from 'antd';
 import React from 'react';
 import {UploadOutlined} from "@ant-design/icons";
-import {Api} from "../../Api";
+import {Api, ResultData} from "../../Api";
 
 export class ChapterImport extends React.Component<any, any> {
     private formRef = React.createRef<FormInstance>()
@@ -19,7 +19,8 @@ export class ChapterImport extends React.Component<any, any> {
     handleChange = (info: any) => {
         if (info.file.status === 'done') {
             console.log("上传成功。")
-            this.setState({fileUploadDone: false, chapterInfo: info.file.response})
+            let data: ResultData = info.file.response
+            this.setState({fileUploadDone: false, chapterInfo: data.data})
         } else if (info.file.status === 'error') {
             console.log("上传失败。")
             message.error(info.file.response).then(r => console.log(r))

@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 
 import static cn.hutool.core.util.StrUtil.DASHED;
 import static cn.hutool.core.util.StrUtil.DOT;
-import static com.bobo.comicat.common.util.CacheUtil.CACHE_TAGS;
 import static com.bobo.comicat.common.constant.Constant.COVER_PATH;
 import static com.bobo.comicat.common.constant.JdbcConstant.*;
+import static com.bobo.comicat.common.util.CacheUtil.CACHE_TAGS;
 
 /**
  * 漫画类
@@ -42,12 +42,10 @@ public class ComicsService extends BaseBean {
   }
 
   public void getComics(RoutingContext routingContext) {
-    ComicsQuery comicsQuery = new ComicsQuery();
     MultiMap params = routingContext.request().params();
-    comicsQuery.setComicsName(params.get("comicsName"));
-    comicsQuery.setComicsTagList(params.getAll("comicsTags"));
-    comicsQuery.setTagLogic(StrUtil.isEmpty(params.get("tagLogic")) ? "or" : params.get("tagLogic"));
-    comicsQuery.setPageNumber(NumberUtil.parseInt(params.get("pageNumber")));
+    ComicsQuery comicsQuery = ComicsQuery.builder().comicsTagList(params.getAll("comicsTags"))
+      .tagLogic(StrUtil.isEmpty(params.get("tagLogic")) ? "or" : params.get("tagLogic"))
+      .pageNumber(NumberUtil.parseInt(params.get("pageNumber"))).comicsName(params.get("comicsName")).build();
     if (comicsQuery.getPageSize() == 0) {
       comicsQuery.setPageSize(config.getInteger("pageSize", 18));
     }
@@ -58,13 +56,13 @@ public class ComicsService extends BaseBean {
     eventBus.request(QUERY_COMICS_COUNT, comicsQueryJson).onSuccess(s -> {
       Integer count = (Integer) s.body();
       if (count < 1) {
-        ComicsView comicsView = new ComicsView().setComicsQuery(comicsQuery).setComicsList(new ArrayList<>());
+        ComicsView comicsView = ComicsView.builder().comicsQuery(comicsQuery).comicsList(new ArrayList<>()).build();
         responseSuccess(routingContext.response(), comicsView);
       } else {
         comicsQuery.setTotal(count);
         eventBus.request(QUERY_COMICS_PAGE, comicsQueryJson).onSuccess(su -> {
           List<Comics> list = ((JsonArray) su.body()).stream().map(o -> JSONUtil.toBean(o.toString(), Comics.class)).collect(Collectors.toList());
-          ComicsView comicsView = new ComicsView().setComicsQuery(comicsQuery).setComicsList(list);
+          ComicsView comicsView = ComicsView.builder().comicsQuery(comicsQuery).comicsList(list).build();
           responseSuccess(routingContext.response(), comicsView);
         }).onFailure(f -> responseError(routingContext.response(), f));
       }

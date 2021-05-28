@@ -2,6 +2,7 @@ package com.bobo.comicat.service;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.base.MyCompositeFuture;
@@ -18,15 +19,13 @@ import io.vertx.core.json.JsonObject;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import static cn.hutool.core.text.CharPool.SLASH;
 import static com.bobo.comicat.common.constant.Constant.*;
@@ -114,15 +113,6 @@ public class FileService extends BaseBean {
     return promise.future();
   }
 
-
-  @Data
-  @Accessors(chain = true)
-  static class CopyOption {
-    AsyncFile asyncFile;
-    long begin;
-    long end;
-  }
-
   /**
    * 读取zip文件
    *
@@ -133,90 +123,74 @@ public class FileService extends BaseBean {
     String uploadedFileName = chapterQuery.getFileUpload().uploadedFileName();
 
     return vertx.executeBlocking(promise -> {
-      try {
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(uploadedFileName)));
-        ZipEntry nextEntry;
-        ChapterView chapterView = new ChapterView();
-        int i = 0;
-        while ((nextEntry = zis.getNextEntry()) != null) {
-          if (!nextEntry.isDirectory()) {
-            i++;
-          }
-        }
-        chapterView.setUploadPath(FileUtil.getPrefix(uploadedFileName));
-        chapterView.setComicsId(chapterQuery.getComicsId());
-        chapterView.setPageNumber(i);
-        promise.complete(chapterView);
-      } catch (Exception e) {
-        e.printStackTrace();
-        promise.fail(e);
-      }
+      ZipFile zipFile = ZipUtil.toZipFile(FileUtil.file(uploadedFileName), null);
+      ChapterView chapterView = ChapterView.builder().build();
+      chapterView.setUploadPath(FileUtil.getPrefix(uploadedFileName));
+      chapterView.setComicsId(chapterQuery.getComicsId());
+      chapterView.setPageNumber(zipFile.stream().filter(e -> !e.isDirectory()).count());
+      promise.complete(chapterView);
     });
   }
-
 
   public Future<JsonObject> zipToFilePackage(ChapterQuery chapterQuery) {
     Promise<JsonObject> promise = Promise.promise();
     //确认zip路径
     String zipPath = CACHE_UPLOAD_PATH + SLASH + chapterQuery.getUploadPath();
-    try {
-      ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipPath)));
-      ZipEntry nextEntry;
-      ArrayList<ZipEntry> entryArrayList = new ArrayList<>();
-      while ((nextEntry = zis.getNextEntry()) != null) {
-        if (!nextEntry.isDirectory()) {
-          entryArrayList.add(nextEntry);
-        }
-      }
-      List<ZipEntry> name = CollUtil.sortByProperty(entryArrayList, "name");
-      String comicsPath = basePath + SLASH + chapterQuery.getComics().getComicsName();
-      String chapterPath = comicsPath + SLASH + chapterQuery.getChapterName() + ".cct";
-      String coverImage = basePath + COVER_PATH + chapterQuery.getComics().getCoverImage();
-      FilePackage filePackage = new FilePackage()
-        .setComicsName(chapterQuery.getComics().getComicsName())
-        .setChapterName(chapterQuery.getChapterName())
-        .setChapterPageNum(chapterQuery.getPageNumber())
-        .setComicsAuthor((chapterQuery.getComics().getComicsAuthor()))
-        .setPageIndex(name.stream().mapToLong(ZipEntry::getSize).toArray());
-      vertx.fileSystem().readFile(coverImage).onFailure(promise::fail)
-        .onSuccess(cover -> vertx.fileSystem().mkdirsBlocking(FileUtil.getParent(chapterPath, 1))
-          .open(chapterPath, new OpenOptions().setWrite(true).setCreate(true)).onFailure(promise::fail)
-          .onSuccess(f -> {
-            Buffer info = Buffer.buffer(JSONUtil.toJsonStr(filePackage.setCoverSize(cover.length())));
-            Buffer buffer = Buffer.buffer();
-            buffer.appendInt(info.length());
-            buffer.appendBuffer(info);
-            buffer.appendBuffer(cover);
-            f.write(buffer);
-            AtomicInteger infoSize = new AtomicInteger(buffer.length());
-            vertx.executeBlocking(blockPromise -> {
-              try {
-                ZipFile zf = new ZipFile(zipPath);
-                for (ZipEntry ze : name) {
-                  InputStream inputStream = zf.getInputStream(ze);
-                  byte[] bytes = new byte[1 << 12];
-                  Buffer zeBuff = Buffer.buffer();
-                  int readLen;
-                  while ((readLen = inputStream.read(bytes)) > 0) {
-                    zeBuff.appendBytes(bytes, 0, readLen);
-                  }
-                  f.write(zeBuff);
-                  infoSize.addAndGet(zeBuff.length());
-                  inputStream.close();
-                }
-                promise.complete(new JsonObject().put("chapterPath", chapterPath).put("package", filePackage));
-                vertx.fileSystem().delete(zipPath);
-              } catch (Exception e) {
-                e.printStackTrace();
-                blockPromise.fail(e);
-              }
-            }, promise);
-          }));
+    ZipFile zipFile = ZipUtil.toZipFile(FileUtil.file(zipPath), null);
+    List<ZipEntry> name = CollUtil.sortByProperty(zipFile.stream().filter(e -> !e.isDirectory()).collect(Collectors.toList()), "name");
+    String comicsPath = basePath + SLASH + chapterQuery.getComics().getComicsName();
+    String chapterPath = comicsPath + SLASH + chapterQuery.getChapterName() + ".cct";
+    chapterQuery.setChapterPath(chapterQuery.getComics().getComicsName() + SLASH + chapterQuery.getChapterName() + ".cct");
+    String coverImage = basePath + COVER_PATH + chapterQuery.getComics().getCoverImage();
+    FilePackage filePackage = FilePackage.builder()
+      .comicsName(chapterQuery.getComics().getComicsName())
+      .chapterName(chapterQuery.getChapterName())
+      .chapterPageNum(chapterQuery.getPageNumber())
+      .comicsAuthor((chapterQuery.getComics().getComicsAuthor()))
+      .pageIndex(name.stream().mapToLong(ZipEntry::getSize).toArray())
+      .build();
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Future.failedFuture(e);
-    }
+    vertx.fileSystem().readFile(coverImage).onFailure(promise::fail)
+      .onSuccess(cover -> vertx.fileSystem().mkdirsBlocking(FileUtil.getParent(chapterPath, 1))
+        .open(chapterPath, new OpenOptions().setWrite(true).setCreate(true)).onFailure(promise::fail)
+        .onSuccess(f -> {
+          Buffer info = Buffer.buffer(JSONUtil.toJsonStr(filePackage.setCoverSize(cover.length())));
+          Buffer buffer = Buffer.buffer();
+          buffer.appendInt(info.length());
+          buffer.appendBuffer(info);
+          buffer.appendBuffer(cover);
+          f.write(buffer);
+          AtomicInteger infoSize = new AtomicInteger(buffer.length());
+          vertx.executeBlocking(blockPromise -> {
+            try {
+              for (ZipEntry ze : name) {
+                InputStream inputStream = zipFile.getInputStream(ze);
+                byte[] bytes = new byte[1 << 12];
+                Buffer zeBuff = Buffer.buffer();
+                int readLen;
+                while ((readLen = inputStream.read(bytes)) > 0) {
+                  zeBuff.appendBytes(bytes, 0, readLen);
+                }
+                f.write(zeBuff);
+                infoSize.addAndGet(zeBuff.length());
+                inputStream.close();
+              }
+              promise.complete(new JsonObject().put("chapterPath", chapterPath).put("package", filePackage));
+              vertx.fileSystem().delete(zipPath);
+            } catch (Exception e) {
+              e.printStackTrace();
+              blockPromise.fail(e);
+            }
+          }, promise);
+        }));
     return promise.future();
+  }
+
+  @Data
+  @Accessors(chain = true)
+  static class CopyOption {
+    AsyncFile asyncFile;
+    long begin;
+    long end;
   }
 }
