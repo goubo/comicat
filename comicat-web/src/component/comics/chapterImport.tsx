@@ -40,8 +40,12 @@ export class ChapterImport extends React.Component<any, any> {
         fields.pageNumber = this.state.chapterInfo.pageNumber
         fields.uploadPath = this.state.chapterInfo.uploadPath
         fields.comics = this.props.comicsInfo
-        Api.addChapter(fields).then(r => {
-            console.log(r)
+        Api.addChapter(fields).then(() => {
+            this.setState({
+                fileUploadDone:true,
+            })
+            this.props.closeImportChapterModal()
+            //刷新列表
         }).finally(() => {
             console.log('finally')
         })
@@ -58,11 +62,18 @@ export class ChapterImport extends React.Component<any, any> {
                 </Row>
             </div>
     }
+    cancelModal = () => {
+        this.setState({
+            fileUploadDone:true,
+        })
+        //删除已经上传的文件
+        this.props.closeImportChapterModal()
+    }
 
     render() {
         return <>
             <Modal visible={this.props.importChapterVisible} title={"导入章节"} zIndex={10}
-                   onCancel={this.props.closeImportChapterModal} footer={''}>
+                   onCancel={this.cancelModal} footer={''}>
                 漫画名称 : {this.props.comicsInfo.comicsName}
                 <Divider/>
                 选择文件 :

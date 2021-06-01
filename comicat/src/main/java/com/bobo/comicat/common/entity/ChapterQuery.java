@@ -14,9 +14,6 @@ import lombok.experimental.Accessors;
 @Builder
 @Accessors(chain = true)
 public class ChapterQuery {
-  private FileUpload fileUpload;
-  private String uploadPath;
-  private Comics comics;
   /**
    * 章节id
    */
@@ -57,4 +54,17 @@ public class ChapterQuery {
    *
    */
   private String chapterPath;
+
+  /**
+   * 上传文件
+   */
+  private FileUpload fileUpload;
+  /**
+   * 上传的临时文件名
+   */
+  private String uploadPath;
+  /**
+   * 关联漫画信息
+   */
+  private Comics comics;
 }

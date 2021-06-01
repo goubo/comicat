@@ -16,6 +16,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -184,6 +185,13 @@ public class FileService extends BaseBean {
           }, promise);
         }));
     return promise.future();
+  }
+
+  public void deleteTemp(RoutingContext routingContext) {
+    String param = routingContext.request().getParam(PATH);
+    vertx.fileSystem().delete(CACHE_UPLOAD_PATH + SLASH + param)
+      .onSuccess(s -> responseSuccess(routingContext.response(), s))
+      .onFailure(f -> responseError(routingContext.response(), f));
   }
 
   @Data

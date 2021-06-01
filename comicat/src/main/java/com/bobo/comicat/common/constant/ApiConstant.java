@@ -19,6 +19,9 @@ public class ApiConstant {
   public static final String CHAPTER = API_BASE_URL + "/chapter";
   public static final String CHAPTER_UPLOAD = CHAPTER + "/upload";
 
+  public static final String FILE = "/file";
+  public static final String FILE_TEMP = FILE + "/temp/:path";
+
 
   public static final int RESULT_CODE_200 = 200;
   public static final int RESULT_CODE_500 = 500;

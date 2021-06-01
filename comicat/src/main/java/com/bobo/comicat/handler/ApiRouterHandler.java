@@ -35,10 +35,10 @@ public class ApiRouterHandler extends BaseBean {
     TagService tagService = new TagService(vertx, config);
     ConfigService configService = new ConfigService(vertx, config);
     ChapterService chapterService = new ChapterService(vertx, config);
+    FileService fileService = FileService.getInstance(vertx, config);
     router.get(COMICS).handler(comicsService::getComics);
     router.post(COMICS).handler(comicsService::addComics);
     router.patch(COMICS).handler(comicsService::updateComics);
-
 
     router.get(COMICS_IMAGE).handler(comicsService::getComicsImage);
     router.get(COMICS_COVER_PATH).handler(comicsService::getComicsCover);
@@ -49,6 +49,8 @@ public class ApiRouterHandler extends BaseBean {
 
     router.get(CONFIG).handler(configService::getConfig);
     router.post(CONFIG).handler(configService::setConfig);
+
+    router.delete(FILE_TEMP).handler(fileService::deleteTemp);
 
     router.get("/testFile").handler(this::testFile);
 

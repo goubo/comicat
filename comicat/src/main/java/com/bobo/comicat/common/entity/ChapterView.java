@@ -13,6 +13,9 @@ import lombok.experimental.Accessors;
 @Builder
 @Accessors(chain = true)
 public class ChapterView {
+  /**
+   * 返回上传的是临时文件名
+   */
   private String uploadPath;
   /**
    * 章节id
