@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Col, Row, List, Card} from "antd";
+import {Button, Col, List, Row,} from "antd";
 
 export class ChapterList extends React.Component<any, any> {
     render() {
@@ -9,8 +9,7 @@ export class ChapterList extends React.Component<any, any> {
                 <Col offset={12} onClick={this.props.showImportChapterModal}><Button>导入</Button></Col>
             </Row>
             <Row>
-                {/*{JSON.stringify(this.props.chapterList)}*/}
-                {this.props.chapterList}
+                {JSON.stringify(this.props.chapterList)}
                 <List grid={{
                     gutter: 16, //栅格间隔
                     xs: 4, //展示的列数

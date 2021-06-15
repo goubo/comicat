@@ -140,6 +140,8 @@ public class ComicsService extends BaseBean {
           })).onFailure(rf -> {
         vertx.fileSystem().delete(fileUpload.uploadedFileName());
         responseError(routingContext.response(), rf);
+
+
       });
     } else {
       eventBus.request(JdbcConstant.INSERT_COMICS, JSONUtil.toJsonStr(comicsQuery))

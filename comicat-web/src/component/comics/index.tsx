@@ -111,22 +111,6 @@ export class ComicsList extends React.Component<any, any> {
         })
     }
 
-    private getComicsList() {
-        Api.getComicsList(this.state.queryParams).then(response => {
-            let data: ResultData = response?.data
-            this.setState({
-                comicsList: data.data.comicsList
-            })
-            if (this.state.comicsInfo.id) {
-                data.data.comicsList.forEach((c: { id: any; }) => {
-                    if (c.id === this.state.comicsInfo.id) {
-                        this.setState({comicsInfo: c})
-                    }
-                })
-            }
-        })
-    }
-
     render() {
         return <>
             <Layout>
@@ -150,6 +134,22 @@ export class ComicsList extends React.Component<any, any> {
 
         </>
 
+    }
+
+    private getComicsList() {
+        Api.getComicsList(this.state.queryParams).then(response => {
+            let data: ResultData = response?.data
+            this.setState({
+                comicsList: data.data.comicsList
+            })
+            if (this.state.comicsInfo.id) {
+                data.data.comicsList.forEach((c: { id: any; }) => {
+                    if (c.id === this.state.comicsInfo.id) {
+                        this.setState({comicsInfo: c})
+                    }
+                })
+            }
+        })
     }
 
 

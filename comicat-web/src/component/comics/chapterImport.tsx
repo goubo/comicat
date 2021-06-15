@@ -42,7 +42,7 @@ export class ChapterImport extends React.Component<any, any> {
         fields.comics = this.props.comicsInfo
         Api.addChapter(fields).then(() => {
             this.setState({
-                fileUploadDone:true,
+                fileUploadDone: true,
             })
             this.props.closeImportChapterModal()
             //刷新列表
@@ -64,7 +64,7 @@ export class ChapterImport extends React.Component<any, any> {
     }
     cancelModal = () => {
         this.setState({
-            fileUploadDone:true,
+            fileUploadDone: true,
         })
         //删除已经上传的文件
         this.props.closeImportChapterModal()
