@@ -7,6 +7,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
+import static com.bobo.comicat.common.constant.ApiConstant.RESULT_CODE_500;
 import static com.bobo.comicat.common.constant.Constant.REFRESH;
 import static com.bobo.comicat.common.constant.JdbcConstant.QUERY_COMICS_TAGS;
 import static com.bobo.comicat.common.util.CacheUtil.CACHE_TAGS;
@@ -40,7 +41,7 @@ public class TagService extends BaseBean {
           }
         });
         responseSuccess(routingContext.response(), CACHE_TAGS);
-      }).onFailure(f -> responseError(routingContext.response(), 500, f.getMessage()));
+      }).onFailure(f -> responseError(routingContext.response(), RESULT_CODE_500, f.getMessage()));
     } else {
       responseSuccess(routingContext.response(), CACHE_TAGS);
     }

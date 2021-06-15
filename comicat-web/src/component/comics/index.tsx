@@ -18,7 +18,7 @@ interface QueryParams {
 interface ComicsInfoModal {
     visible: boolean
     title: string
-    info: object
+    info: any
 }
 
 export class ComicsList extends React.Component<any, any> {
@@ -66,9 +66,14 @@ export class ComicsList extends React.Component<any, any> {
      * 显示漫画详情
      */
     showComicsInfoModal = (comicsInfo: ComicsInfoModal) => {
-        this.setState({
-            comicsInfoVisible: true,
-            comicsInfo: comicsInfo.info
+        //获取列表
+        Api.getChapterList({comicsId: comicsInfo.info.id}).then(response => {
+            let data: ResultData = response?.data
+            comicsInfo.info.chapterList = data.data
+            this.setState({
+                comicsInfoVisible: true,
+                comicsInfo: comicsInfo.info
+            })
         })
     }
     closeComicsInfoModal = () => {

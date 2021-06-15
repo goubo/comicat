@@ -28,7 +28,6 @@ public class MainVerticle extends AbstractVerticle {
       new ApiRouterHandler(vertx, config()).router();
     });
 
-
   }
 
 }

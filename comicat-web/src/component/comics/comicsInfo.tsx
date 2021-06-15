@@ -32,10 +32,10 @@ export class ComicsInfo extends React.Component<any, any> {
                         <Row>标签 : <ComTagTag value={this.props.comicsInfo.comicsTags}/></Row>
                     </Col>
                 </Row>
-                <ChapterList showImportChapterModal={this.props.showImportChapterModal}/>
+                <ChapterList showImportChapterModal={this.props.showImportChapterModal}
+                             chapterList={this.props.comicsInfo.chapterList}
+                />
             </Modal>
         </>);
     }
-
-
 }

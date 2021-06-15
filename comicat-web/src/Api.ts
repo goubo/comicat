@@ -68,6 +68,14 @@ export class Api extends React.Component<any, any> {
         data: data
     })
 
+    static getChapterList = (params: any) => request({
+        method: 'GET',
+        url: '/chapter/' + params.comicsId,
+        paramsSerializer: params => {
+            return qs.stringify(params, {indices: false})
+        }
+    })
+
 
     static getConfig = () => request({
         method: 'GET',

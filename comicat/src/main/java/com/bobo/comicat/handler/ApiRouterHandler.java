@@ -42,10 +42,11 @@ public class ApiRouterHandler extends BaseBean {
 
     router.get(COMICS_IMAGE).handler(comicsService::getComicsImage);
     router.get(COMICS_COVER_PATH).handler(comicsService::getComicsCover);
-    router.get(GET_TAGS).handler(tagService::getTags);
+    router.get(TAGS_GET_LIST).handler(tagService::getTags);
 
     router.post(CHAPTER_UPLOAD).handler(chapterService::upload);
     router.post(CHAPTER).handler(chapterService::addChapter);
+    router.get(CHAPTER_GET_LIST).handler(chapterService::getList);
 
     router.get(CONFIG).handler(configService::getConfig);
     router.post(CONFIG).handler(configService::setConfig);

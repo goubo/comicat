@@ -32,7 +32,7 @@ public abstract class BaseBean {
   }
 
   protected void responseSuccess(HttpServerResponse response, Object object) {
-    Result build = Result.builder().data(object).code(RESULT_CODE_200).msg(RESULT_SUCCESS).build();
+    Result build = Result.builder().data(object).code(RESULT_CODE_200).msg(RESULT_MESSAGE_SUCCESS).build();
     response.putHeader("content-type", "application/json; charset=utf-8").setStatusCode(build.getCode()).end(build.toJsonString());
   }
 

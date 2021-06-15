@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import static cn.hutool.core.util.StrUtil.DASHED;
 import static cn.hutool.core.util.StrUtil.DOT;
+import static com.bobo.comicat.common.constant.ApiConstant.RESULT_CODE_404;
+import static com.bobo.comicat.common.constant.ApiConstant.RESULT_MESSAGE_IMAGE_NOT_FOUND;
 import static com.bobo.comicat.common.constant.Constant.COVER_PATH;
 import static com.bobo.comicat.common.constant.JdbcConstant.*;
 import static com.bobo.comicat.common.util.CacheUtil.CACHE_TAGS;
@@ -44,7 +46,7 @@ public class ComicsService extends BaseBean {
   public void getComics(RoutingContext routingContext) {
     MultiMap params = routingContext.request().params();
     ComicsQuery comicsQuery = ComicsQuery.builder().comicsTagList(params.getAll("comicsTags"))
-      .tagLogic(StrUtil.isEmpty(params.get("tagLogic")) ? "or" : params.get("tagLogic"))
+      .tagLogic(StrUtil.isEmpty(params.get("tagLogic")) ? OR : params.get("tagLogic"))
       .pageNumber(NumberUtil.parseInt(params.get("pageNumber"))).comicsName(params.get("comicsName")).build();
     if (comicsQuery.getPageSize() == 0) {
       comicsQuery.setPageSize(config.getInteger("pageSize", 18));
@@ -77,7 +79,7 @@ public class ComicsService extends BaseBean {
   public void getComicsCover(RoutingContext routingContext) {
     String path = routingContext.request().getParam("path");
     routingContext.response().sendFile(basePath + COVER_PATH + path)
-      .onFailure(f -> responseError(routingContext.response(), 404, "图片未找到"));
+      .onFailure(f -> responseError(routingContext.response(), RESULT_CODE_404, RESULT_MESSAGE_IMAGE_NOT_FOUND));
   }
 
   public void updateComics(RoutingContext routingContext) {

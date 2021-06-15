@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.base.MyCompositeFuture;
 import com.bobo.comicat.common.entity.Chapter;
+import com.bobo.comicat.common.entity.ChapterQuery;
 import com.bobo.comicat.common.entity.ComicsQuery;
 import com.bobo.comicat.common.entity.TagQuery;
 import com.bobo.comicat.handler.JdbcHandler;
@@ -78,14 +79,25 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
     eventBus.consumer(UPDATE_COMICS, this::updateComics);
 
     eventBus.consumer(INSERT_CHAPTER, this::insertChapter);
-
-    eventBus.consumer(QUERY_TAGS, this::queryTags);
+    eventBus.consumer(QUERY_CHAPTER, this::queryChapter);
 
 
   }
 
+  private void queryChapter(Message<String> message) {
+    ChapterQuery chapter = JSONUtil.toBean(message.body(), ChapterQuery.class);
+    String querySql = "SELECT  * FROM chapter where comics_id = ? ";
+    jdbcClient.queryWithParams(querySql, new JsonArray().add(chapter.getComicsId()), res -> {
+      if (res.succeeded()) {
+        message.reply(new JsonArray(res.result().getRows()));
+      } else {
+        message.fail(500, res.cause().getMessage());
+      }
+    });
+  }
+
   private void insertChapter(Message<String> message) {
-    Chapter chapter = JSONUtil.toBean(message.body(), Chapter.class);
+    ChapterQuery chapter = JSONUtil.toBean(message.body(), ChapterQuery.class);
     String insertSql = "INSERT INTO chapter (comics_id,chapter_index,chapter_name,status,page_number,file_type,file_path,chapter_path,chapter_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
     List<Object> params = new ArrayList<>();
     params.add(chapter.getComicsId());
@@ -186,37 +198,6 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
         message.fail(500, res.cause().getMessage());
       }
     });
-  }
-
-
-  private void queryTags(Message<JsonObject> message) {
-    TagQuery tagQuery = JSONUtil.toBean(message.body().toString(), TagQuery.class);
-    String select = "select * from tag";
-    String whereSql = "";
-    List<Object> params = new ArrayList<>();
-    if (StrUtil.isNotEmpty(tagQuery.getName())) {
-      whereSql += "name = ?";
-      params.add(tagQuery.getName());
-    }
-    if (StrUtil.isNotEmpty(tagQuery.getGradeType())) {
-      if (StrUtil.isNotEmpty(whereSql)) {
-        whereSql += AND;
-      }
-      whereSql += "grade_type = ?";
-      params.add(tagQuery.getGradeType());
-    }
-    if (StrUtil.isNotEmpty(whereSql)) {
-      select += WHERE;
-      select += whereSql;
-    }
-    jdbcClient.queryWithParams(select, new JsonArray(params), res -> {
-      if (res.succeeded()) {
-        message.reply(new JsonArray(res.result().getRows()));
-      } else {
-        message.fail(500, res.cause().getMessage());
-      }
-    });
-
   }
 
   private void queryComicsPage(Message<JsonObject> message) {
