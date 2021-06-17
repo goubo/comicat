@@ -35,11 +35,12 @@ export class Setting extends React.Component<any, any> {
     componentDidMount() {
         Api.getConfig().then(response => {
             if (response && response.data) {
+                console.log(response.data.data)
                 this.setState({
-                    config: response.data,
-                    proxyEnable: response.data.proxy.enable
+                    config: response.data.data,
+                    proxyEnable: response.data.data.proxy.enable
                 })
-                this.formRef.current!.setFieldsValue(response.data)
+                this.formRef.current!.setFieldsValue(response.data.data)
             }
         })
     }

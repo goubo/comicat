@@ -1,27 +1,35 @@
 import React from 'react';
-import {Button, Col, List, Row,} from "antd";
+import {Button, Card, Col, Row, Space,} from "antd";
+import {DeleteOutlined} from '@ant-design/icons';
+
 
 export class ChapterList extends React.Component<any, any> {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            editChapter: false
+        }
+    }
+
+    cardGridStyle = {width: '25%',}
+
     render() {
         return <>
-            <Row>
+            <Row gutter={[16, 16]}>
                 <Col>章节列表</Col>
-                <Col offset={12} onClick={this.props.showImportChapterModal}><Button>导入</Button></Col>
+                <Col offset={12}><Button size="small" onClick={this.props.showImportChapterModal}>导入</Button></Col>
+                <Col ><Button size="small">修改</Button></Col>
             </Row>
-            <Row>
-                {JSON.stringify(this.props.chapterList)}
-                <List grid={{
-                    gutter: 16, //栅格间隔
-                    xs: 4, //展示的列数
-                    sm: 4, // 展示的列数
-                    md: 4,//展示的列数
-                    lg: 4,//展示的列数
-                    xl: 6,//展示的列数
-                    xxl: 6,//展示的列数
-                }}>
-
-                </List>
-            </Row>
+            <Card>
+                {this.props.chapterList.map((item: any, idx: any) => (
+                    <Card.Grid style={this.cardGridStyle} key={idx}>
+                        <Space>
+                            {item.chapterName}
+                            {this.state.editChapter ? <DeleteOutlined/> : null}
+                        </Space>
+                    </Card.Grid>
+                ))}
+            </Card>
         </>
     }
 

@@ -151,7 +151,4 @@ public class ComicsService extends BaseBean {
         }).onFailure(f -> responseError(routingContext.response(), f));
     }
   }
-
-  //解析zip文件列表,文件数量信息
-
 }
