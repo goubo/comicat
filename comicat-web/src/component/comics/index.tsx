@@ -4,7 +4,7 @@ import {ComicsSider} from './comicsSider';
 import {Api, ResultData} from '../../Api';
 import {ComicsContent} from './comicsContent';
 import {ComicsEdit} from "./comicsEdit";
-import {ComicsInfo} from './comicsInfo';
+import {ComicsInfo, ComicsInfoModal} from './comicsInfo';
 import {ChapterImport} from "./chapterImport";
 
 
@@ -15,11 +15,6 @@ interface QueryParams {
     tagLogic: string
 }
 
-interface ComicsInfoModal {
-    visible: boolean
-    title: string
-    info: any
-}
 
 export class ComicsList extends React.Component<any, any> {
     private comicsEditRef: any;
@@ -127,9 +122,11 @@ export class ComicsList extends React.Component<any, any> {
             </Layout>
             <ComicsEdit {...this.state} closeEditComicsModal={this.closeEditComicsModal} onRef={this.onComicsEditRef}
                         showEditComicsModal={this.showEditComicsModal}/>
-            <ComicsInfo {...this.state} closeComicsInfoModal={this.closeComicsInfoModal}
+            <ComicsInfo closeComicsInfoModal={this.closeComicsInfoModal}
                         showEditComicsModal={this.showEditComicsModal}
-                        showImportChapterModal={this.showImportChapterModal}/>
+                        showImportChapterModal={this.showImportChapterModal}
+                        comicsInfo={this.state.comicsInfo}
+                        comicsInfoVisible={this.state.comicsInfoVisible}/>
             <ChapterImport {...this.state} closeImportChapterModal={this.closeImportChapterModal}/>
 
         </>
