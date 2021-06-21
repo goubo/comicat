@@ -3,7 +3,6 @@ import {Tabs} from 'antd';
 import './App.css';
 import {Setting} from './component/setting';
 import {ComicsList} from './component/comics';
-import TestBOBO from './component/test/Test';
 
 
 const {TabPane} = Tabs;
@@ -24,7 +23,6 @@ function App() {
                     <Setting/>
                 </TabPane>
                 <TabPane tab='测试' key='5'>
-                    <TestBOBO/>
                     {/*<TestDND/>*/}
                 </TabPane>
             </Tabs>
