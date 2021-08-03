@@ -5,10 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.base.MyCompositeFuture;
-import com.bobo.comicat.common.entity.Chapter;
 import com.bobo.comicat.common.entity.ChapterQuery;
 import com.bobo.comicat.common.entity.ComicsQuery;
-import com.bobo.comicat.common.entity.TagQuery;
 import com.bobo.comicat.handler.JdbcHandler;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -80,6 +78,14 @@ public class SqliteJdbcHandler extends BaseBean implements JdbcHandler {
 
     eventBus.consumer(INSERT_CHAPTER, this::insertChapter);
     eventBus.consumer(QUERY_CHAPTER, this::queryChapter);
+    eventBus.consumer(DELETE_CHAPTER, this::deleteChapter);
+
+
+  }
+
+  private void deleteChapter(Message<String> message) {
+    ChapterQuery chapter = JSONUtil.toBean(message.body(), ChapterQuery.class);
+    String querySql = "DELETE FROM chapter WHERE id = 4";
 
 
   }

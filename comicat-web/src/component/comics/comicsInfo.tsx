@@ -13,6 +13,7 @@ export interface ComicsInfoModal {
 export const ComicsInfo = (props: {
     showImportChapterModal(): void,
     closeComicsInfoModal(): void,
+    deleteChapter(item: object,index:number): void,
     showEditComicsModal(comicsInfo: ComicsInfoModal): any,
     comicsInfo: any,
     comicsInfoVisible: any,
@@ -42,6 +43,7 @@ export const ComicsInfo = (props: {
             </Col>
         </Row>
         <ChapterList showImportChapterModal={props.showImportChapterModal}
+                     deleteChapter={props.deleteChapter}
                      chapterList={props.comicsInfo.chapterList}
         />
     </Modal>;

@@ -17,6 +17,7 @@ public class ApiConstant {
   public static final String TAGS_GET_LIST = API_BASE_URL + "/tags";
 
   public static final String CHAPTER = API_BASE_URL + "/chapter";
+  public static final String CHAPTER_ID = CHAPTER + "/:id";
   public static final String CHAPTER_UPLOAD = CHAPTER + "/upload";
   public static final String CHAPTER_GET_LIST = CHAPTER + "/:comicsId";
 

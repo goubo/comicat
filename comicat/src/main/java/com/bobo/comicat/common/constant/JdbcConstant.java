@@ -21,5 +21,6 @@ public class JdbcConstant {
 
   public static final String INSERT_CHAPTER = "jdbc.insert.chapter";
   public static final String QUERY_CHAPTER = "jdbc.query.chapter";
+  public static final String DELETE_CHAPTER = "jdbc.delete.chapter";
 
 }

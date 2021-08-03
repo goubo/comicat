@@ -3,6 +3,9 @@ import React from 'react';
 import {UploadOutlined} from "@ant-design/icons";
 import {Api, ResultData} from "../../Api";
 
+/**
+ * 上传文件
+ */
 export class ChapterImport extends React.Component<any, any> {
     private formRef = React.createRef<FormInstance>()
 
@@ -22,7 +25,7 @@ export class ChapterImport extends React.Component<any, any> {
             let data: ResultData = info.file.response
             this.setState({fileUploadDone: false, chapterInfo: data.data})
         } else if (info.file.status === 'error') {
-            console.log("上传失败。")
+            console.log("上传失败。", info)
             message.error(info.file.response).then(r => console.log(r))
             console.log(info)
         }

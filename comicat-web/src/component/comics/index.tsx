@@ -1,5 +1,5 @@
 import React from 'react';
-import {Layout} from 'antd';
+import {Layout, Modal} from 'antd';
 import {ComicsSider} from './comicsSider';
 import {Api, ResultData} from '../../Api';
 import {ComicsContent} from './comicsContent';
@@ -19,6 +19,7 @@ interface QueryParams {
 export class ComicsList extends React.Component<any, any> {
     private comicsEditRef: any;
 
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -35,6 +36,29 @@ export class ComicsList extends React.Component<any, any> {
             }
         }
     }
+
+    /**
+     *删除章节
+     */
+    deleteChapter = (item: { chapterName: string }, index: number) => Modal.warning({
+        title: '确认删除',
+        okCancel: true,
+        cancelText: '取消',
+        okText: '删除',
+        maskClosable: true,
+        closable: true,
+        content: `是否删除 ${this.state.comicsInfo.comicsName} 的 ${item.chapterName}`,
+        onOk: () => {
+            let comicsInfo = this.state.comicsInfo
+            Api.deleteChapter(item).then(() => {
+                comicsInfo.chapterList.splice(index, 1)
+                this.setState({comicsInfo: comicsInfo})
+            }).catch(() => {
+                Modal.destroyAll()
+            })
+        }
+    })
+
 
     onComicsEditRef = (ref: any) => {
         this.comicsEditRef = ref
@@ -106,6 +130,9 @@ export class ComicsList extends React.Component<any, any> {
         })
     }
 
+    /**
+     * 漫画首页
+     */
     render() {
         return <>
             <Layout>
@@ -126,6 +153,7 @@ export class ComicsList extends React.Component<any, any> {
                         showEditComicsModal={this.showEditComicsModal}
                         showImportChapterModal={this.showImportChapterModal}
                         comicsInfo={this.state.comicsInfo}
+                        deleteChapter={this.deleteChapter}
                         comicsInfoVisible={this.state.comicsInfoVisible}/>
             <ChapterImport {...this.state} closeImportChapterModal={this.closeImportChapterModal}/>
 

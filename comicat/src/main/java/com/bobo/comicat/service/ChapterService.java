@@ -2,25 +2,20 @@ package com.bobo.comicat.service;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.bobo.comicat.common.base.BaseBean;
 import com.bobo.comicat.common.constant.Constant;
 import com.bobo.comicat.common.constant.JdbcConstant;
-import com.bobo.comicat.common.entity.Chapter;
 import com.bobo.comicat.common.entity.ChapterQuery;
 import com.bobo.comicat.common.entity.ChapterView;
-import com.bobo.comicat.common.entity.Comics;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,6 +98,12 @@ public class ChapterService extends BaseBean {
       responseSuccess(routingContext.response(), chapterViews);
 
     }).onFailure(f -> responseError(routingContext.response(), f));
+
+  }
+
+  public void delete(RoutingContext routingContext) {
+    String id = routingContext.request().getParam("id");
+    //删除文件,再删除数据库
 
   }
 }

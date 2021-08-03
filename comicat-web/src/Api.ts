@@ -76,6 +76,11 @@ export class Api extends React.Component<any, any> {
         }
     })
 
+    static deleteChapter = (params: any) => request({
+        method: "delete",
+        url: '/chapter/' + params.id,
+    })
+
 
     static getConfig = () => request({
         method: 'GET',

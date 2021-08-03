@@ -8,7 +8,9 @@ const checkboxGroupStyle: CSSProperties = {
     width: '100%', display: 'flex', flexDirection: 'column'
 }
 
-
+/**
+ *  左侧边框,标签列表
+ */
 export class ComicsSider extends React.Component<any, any> {
 
     checkedList: string[] = []
