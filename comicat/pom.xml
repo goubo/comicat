@@ -144,7 +144,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <release>1.8</release>
+          <release>11</release>
+          <skip>true</skip>
         </configuration>
       </plugin>
       <plugin>

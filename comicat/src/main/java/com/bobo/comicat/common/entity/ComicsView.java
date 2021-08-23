@@ -18,42 +18,4 @@ import java.util.List;
 public class ComicsView {
   private ComicsQuery comicsQuery;
   private List<Comics> comicsList;
-  private Comics comics;
-
-  /**
-   * id
-   */
-  private Integer id;
-  /**
-   * 名称
-   */
-  private String comicsName;
-  /**
-   * 作者
-   */
-  private String comicsAuthor;
-  /**
-   * 标签
-   */
-  private String comicsTags;
-  /**
-   * 漫画状态
-   */
-  private String status;
-  /**
-   * 录入时间
-   */
-  private LocalDateTime createTime;
-  /**
-   * 封面路径
-   */
-  private String coverImage;
-  /**
-   * 描述
-   */
-  private String description;
-  /**
-   * 分级
-   */
-  private String gradeType;
 }

@@ -3,6 +3,4 @@ export class Utils {
         if (array1.length !== array2.length) return false;
         return array1.sort().join('') === array2.sort().join('');
     };
-
-
 }
