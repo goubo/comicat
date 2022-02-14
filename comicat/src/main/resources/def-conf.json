@@ -1,8 +1,0 @@
-{
-  "basePath": "/Users/bobo/my/work/comicat",
-  "proxy": {},
-  "pageSize": 18,
-  "dataBaseType": "sqlLite",
-  "mysql": {
-  }
-}
