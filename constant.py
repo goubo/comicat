@@ -23,18 +23,11 @@ for class_name, class_ in find_database_access_class("comicat", "mods").items():
 # 配置
 
 # 本地数据
-##  下载队列
-downloaded_task_map = dict()
-"""下载历史,用于确认本地数据是否存在"""
-download_task_map = dict()
-'''下载队列.key:value ,url:taskInfo,下载完成后删除'''
-
 download_task_widget_map = dict()
 
 downloaded_chapter_map = dict()
 '''下载完成的章节列表, 与 downloaded_task_map相同,当没网的时候用于加载本地数据'''
 downloaded_comic_map = dict()
-'''书架列表'''
 
 # 临时数据
 temp = dict()
@@ -46,12 +39,15 @@ file_path = os.path.join(os.path.expanduser('~'), '.cache', 'comicat')
 if not os.path.exists(file_path):
     os.makedirs(file_path)
 DB = shelve.open(os.path.join(file_path, 'userDB'))
-downloaded_task_map = DB['downloaded_task_map']
-download_task_map = DB['download_task_map']
-downloaded_comic_map = DB['downloaded_comic_map']
+# 下载历史,用于确认本地数据是否存在
+downloaded_task_map = DB.get('downloaded_task_map', dict())
+# 下载队列.key:value ,url:taskInfo,下载完成后删除
+download_task_map = DB.get('download_task_map', dict())
+# 书架列表
+downloaded_comic_map = DB.get('downloaded_comic_map', dict())
 mod_list = DB.get('mod_list') if DB.get('mod_list') else set()
 '''启用的mod列表'''
 
 # 配置
 
-down_path = os.path.join(os.path.expanduser('~'), 'Download', 'comicat_down')
+down_path = os.path.join(os.path.expanduser('~'), 'Downloads', 'comicat_down')

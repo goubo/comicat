@@ -50,7 +50,7 @@ class DogemangaComicat(WebsiteInterface):
             print(comic_info.url, response.status_code)
         else:
             tree = etree.HTML(response.text)
-            for a in tree.xpath("//div[@class='site-page-thumbnail-icons-box']/a"):
+            for a in tree.xpath("/html/body/div[2]/div[2]/div[1]//div[@class='site-page-thumbnail-icons-box']/a"):
                 chapter_info = ChapterInfo()
                 chapter_info.title = a.text.strip()
                 chapter_info.url = a.attrib.get("href")

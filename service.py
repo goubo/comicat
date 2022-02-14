@@ -179,6 +179,7 @@ class Service(object):
             callback(task)
             constant.download_task_map[chapter_info.url] = task
             constant.downloaded_task_map[chapter_info.url] = task
+            print(chapter_info.title)
             # 添加到下载线程池中
             self.down_pool.submit(task.download_image_thread)
 
