@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from entity import ComicInfo, ChapterInfo, ImageInfo
 
@@ -8,8 +8,6 @@ class WebsiteInterface(object):
     """
         单个网站的爬虫实现本接口
         class名称必须包括 Comicat 例如 Dm5Comicat , ComicatBilibili
-
-
     """
     __metaclass__ = ABCMeta  # 指定这是一个抽象类
 
@@ -42,7 +40,7 @@ class WebsiteInterface(object):
         pass
 
     @abstractmethod  # 抽象方法
-    def down_image(self, image_info: ImageInfo) -> bytes:
+    def down_image(self, image_info: ImageInfo) -> Optional[bytes]:
         """
         下载图片
         :param image_info:  图片信息

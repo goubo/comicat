@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGroupBox, QScrollArea
 
 import constant
 from entity import ComicInfo, ChapterInfo
-from extend_widgets import ButtonQLabel
+from extend_widgets import ButtonQLabel, CheckableComboBox
 from service import DownloadTask
 from util import image_resize
 
@@ -18,7 +18,7 @@ class DownLoadTaskWidget(QWidget):
     def __init__(self, task: DownloadTask):
         super().__init__()
         self.task = task
-        task.widget = self
+        constant.download_task_widget_map[task.chapterInfo.url] = self
         self.setMinimumHeight(40)
         self.setMaximumHeight(40)
         self.groupBox = QGroupBox(self)
@@ -228,6 +228,11 @@ class UIComicInfoWidget(QWidget):
         self.check_box_list.append(check_box)
         check_box.setText(chapter_info.title)
         check_box.setProperty("chapter_info", chapter_info)
+        task = constant.downloaded_task_map.get(chapter_info.url)
+        if task and task.status == -1:
+            check_box.setStyleSheet('color:red')
+            check_box.setChecked(True)
+
         self.searchVBoxLayout.addWidget(check_box)
         self.i += 1
 
@@ -317,7 +322,7 @@ class MainWindowWidget(QWidget):
         self.centralWidget.setObjectName("centralWidget")
         # 搜索框
         self.souInput = QtWidgets.QLineEdit(self.centralWidget)
-        self.souInput.setGeometry(QtCore.QRect(40, 30, 944, 30))
+        self.souInput.setGeometry(QtCore.QRect(40, 30, 800, 30))
         font = QtGui.QFont()
         font.setPointSize(22)
         font.setKerning(True)
@@ -325,6 +330,15 @@ class MainWindowWidget(QWidget):
         self.souInput.setFont(font)
         self.souInput.setObjectName("souInput")
         self.souInput.setText("龙珠")
+
+        self.modBox = CheckableComboBox(self.centralWidget)
+        self.modBox.setGeometry(QtCore.QRect(850, 30, 120, 30))
+        for k in constant.mod_dist.keys():
+            if k in constant.mod_list:
+                self.modBox.addItem(QtCore.Qt.CheckState.Checked, k)
+            else:
+                self.modBox.addItem(QtCore.Qt.CheckState.Unchecked, k)
+
         # QTabWidget tab页签
         self.tabWidget = QtWidgets.QTabWidget(self.centralWidget)
         self.tabWidget.setGeometry(QtCore.QRect(40, 70, 944, 668))
@@ -397,15 +411,17 @@ class MainWindowWidget(QWidget):
         all_stop.setText("全部停止")
         clear_done = QPushButton()
         clear_done.setText("清理已完成")
+
         down_button_layout.addWidget(all_start)
         down_button_layout.addWidget(all_stop)
         down_button_layout.addWidget(clear_done)
 
         self.souInput.returnPressed.connect(self.input_return_pressed)  # 回车搜索
 
-        self.load_comic_list_signa.connect(self.load_comic_list)  # 更新ui的插槽
-    def stop_all_task(self):
-        constant.SERVICE.stop_all_task()
+        self.load_comic_list_signa.connect(self.search_load_comic_list)  # 更新ui的插槽
+
+        self.bookshelf_load_comic_list()
+        self.download_callback()
 
     def tab_close(self, index):
         """
@@ -423,10 +439,15 @@ class MainWindowWidget(QWidget):
         """
         for i in range(self.searchVBoxLayout.count()):  # 清理显示的内容
             self.searchVBoxLayout.itemAt(i).widget().deleteLater()
-        constant.SERVICE.search(self.souInput.text(), self.load_comic_list_signa.emit)  # 查询回调出发插槽
-        self.tabWidget.setCurrentIndex(2)
+        constant.mod_list.clear()
+        for i in range(self.modBox.count()):
+            if self.modBox.item_checked(i):
+                constant.mod_list.add(self.modBox.model().item(i).text())
+        if len(constant.mod_list) > 0:
+            constant.SERVICE.search(self.souInput.text(), self.load_comic_list_signa.emit)  # 查询回调出发插槽
+            self.tabWidget.setCurrentIndex(2)
 
-    def load_comic_list(self, info: ComicInfo):
+    def search_load_comic_list(self, info: ComicInfo):
         """
         解析的漫画信息,通过回调到本方法,加载页面
         :param info:
@@ -436,6 +457,17 @@ class MainWindowWidget(QWidget):
         if self.souInput.text() == info.searchKey:
             comic_info_widget = UIComicListWidget(info, self.tabWidget, self.downVBoxLayout)
             self.searchVBoxLayout.addWidget(comic_info_widget)
+
+    def bookshelf_load_comic_list(self):
+        for item in constant.downloaded_comic_map.values():
+            comic_info_widget = UIComicListWidget(item, self.tabWidget, self.downVBoxLayout)
+            self.bookshelfVBoxLayout.addWidget(comic_info_widget)
+
+    def download_callback(self):
+        for item in constant.downloaded_task_map.values():
+            widget = DownLoadTaskWidget(item)
+            widget.update_task(item)
+            self.downVBoxLayout.addWidget(widget)
 
 
 class MainWindow(QMainWindow):

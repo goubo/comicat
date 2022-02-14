@@ -6,7 +6,7 @@ import urllib3
 import constant
 from entity import ComicInfo, ChapterInfo, ImageInfo
 from mods.website_interface import WebsiteInterface
-from util import find_database_access_class, BoundedThreadPoolExecutor
+from util import BoundedThreadPoolExecutor
 
 
 def set_class_name(comic: ComicInfo, class_name, key, callback):
@@ -21,24 +21,6 @@ def set_class_name(comic: ComicInfo, class_name, key, callback):
     comic.service = class_name
     comic.searchKey = key
     callback(comic)
-
-
-def search_thread(k, callback):
-    """
-    搜索线程
-    如果缓存中有,直接返回,否则调用所有的mod,进行搜索
-    :param k: 关键字
-    :param callback:回调
-    :return:
-    """
-    if k in constant.temp:
-        for item in constant.temp.get(k):
-            callback(item)
-    else:
-        for class_name, class_ in find_database_access_class("comicat", "mods").items():
-            co = class_()
-            constant.mod_dist[class_name] = co
-            constant.temp[k] = co.search_callback(k, lambda comic: set_class_name(comic, class_name, k, callback))
 
 
 def chapter_thread(comic_info: ComicInfo, callback):
@@ -63,7 +45,6 @@ class DownloadTask(object):
     imageInfos: typing.List[ImageInfo]
     success = {}
     error = {}
-    widget: object
     status: int = 0  # 0:等待开始;1:开始;2:暂停;-1:完成;-2:完成,有错误;-3:有错误,暂停
     show: int = 1  # 下载列表是否展示
 
@@ -76,7 +57,7 @@ class DownloadTask(object):
             return
         if self.status == 0 or self.status == 1:
             self.status = 1
-            file_path = os.path.join('/Users/bo/my/tmp/comicat_down', self.comicInfo.title, self.chapterInfo.title)
+            file_path = os.path.join(constant.down_path, self.comicInfo.title, self.chapterInfo.title)
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
             for page in range(len(self.success) + len(self.error) + 1, len(self.imageInfos) + 1):
@@ -90,11 +71,11 @@ class DownloadTask(object):
                 img_bytes = web_service.down_image(self.imageInfos[page - 1])
                 with open(image_path, "wb") as f:
                     f.write(img_bytes)
-                self.widget.update_task(self)
+                constant.download_task_widget_map[self.chapterInfo.url].update_task(self)
             self.status = -2 if len(self.error) > 0 else -1
-            self.widget.update_task(self)
+            constant.download_task_widget_map[self.chapterInfo.url].update_task(self)
         elif self.status == -2:  # 重试error列表
-            file_path = os.path.join('/Users/bo/my/tmp/comicat_down', self.comicInfo.title, self.chapterInfo.title)
+            file_path = os.path.join(constant.down_path, self.comicInfo.title, self.chapterInfo.title)
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
             for k, v in self.error:
@@ -108,11 +89,18 @@ class DownloadTask(object):
                     f.write(img_bytes)
                 # 更新下载状态
                 self.error.pop(k)
-                self.widget.update_task(self)
+                constant.download_task_widget_map[self.chapterInfo.url].update_task(self)
             self.status = -2 if len(self.error) > 0 else -1
+            constant.download_task_widget_map[self.chapterInfo.url].update_task(self)
         # 真正完成
         if self.status == -1:
             constant.download_task_map.pop(self.chapterInfo.url, None)
+            constant.downloaded_comic_map[self.comicInfo.url] = self.comicInfo
+
+
+def stop_all_task():
+    for url, task in constant.download_task_map:
+        task.status = -3 if task.status == -2 else 2
 
 
 class Service(object):
@@ -130,13 +118,36 @@ class Service(object):
         self.down_pool = BoundedThreadPoolExecutor(max_workers=5)
         self.parse_pool = BoundedThreadPoolExecutor(max_workers=20)
 
+    def search_thread(self, k, callback):
+        """
+        搜索线程
+        如果缓存中有,直接返回,否则调用所有的mod,进行搜索
+        :param k: 关键字
+        :param callback:回调
+        :return:
+        """
+
+        def work_thread(class_name, _key, mod_server, _callback):
+            constant.temp[k] = mod_server.search_callback(_key, lambda comic: set_class_name(comic, class_name, _key,
+                                                                                             _callback))
+
+        if k in constant.temp:
+            for item in constant.temp.get(k):
+                callback(item)
+        else:
+            for mod_name in constant.mod_list:
+                try:
+                    self.parse_pool.submit(work_thread, mod_name, k, constant.mod_dist[mod_name], callback)
+                except Exception as err:
+                    print(err)
+
     def search(self, k, callback):
         """
         搜索,提交到解析线程池中
         :param k: 搜索关键字
         :param callback:  回调函数,返回单个 @ComicInfo
         """
-        self.parse_pool.submit(search_thread, k, callback)
+        self.parse_pool.submit(self.search_thread, k, callback)
 
     def chapter(self, comic_info: ComicInfo, callback):
         """
@@ -201,10 +212,6 @@ class Service(object):
                 task.status = 0
             self.down_pool.submit(task.download_image_thread)
 
-    def stop_all_task(self):
-        for url, task in constant.download_task_map:
-            task.status = -3 if task.status == -2 else 2
-
     def application_down(self):
         """
         停止所有线程
@@ -213,3 +220,7 @@ class Service(object):
         constant.APPLICATION_EXIT = True
         self.down_pool.shutdown()
         self.parse_pool.shutdown()
+        constant.DB['downloaded_task_map'] = constant.downloaded_task_map
+        constant.DB['download_task_map'] = constant.download_task_map
+        constant.DB['downloaded_comic_map'] = constant.downloaded_comic_map
+        constant.DB['mod_list'] = constant.mod_list
