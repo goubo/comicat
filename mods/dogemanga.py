@@ -36,7 +36,8 @@ class DogemangaComicat(WebsiteInterface):
                 info.title = div.xpath('./div[2]//h4/a/text()')[0].replace("\n", "")
                 info.author = div.xpath('./div[2]//h5/a/text()')[0].replace("\n", "")
                 info.describe = div.xpath('./div[2]//p/text()')[0].replace("\n", "")
-                info.status = div.xpath('./div[2]//li')[0]
+                info.status = div.xpath('./div[2]//li')[0].text.split('：')[1]
+                info.tip = ''
                 callback(info)
                 comic_info_list.append(info)
 
