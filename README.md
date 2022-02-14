@@ -1,6 +1,6 @@
 # 漫画下载阅读器
 
-基于pyqt6,
+基于pyqt6,python 3.9.7 及以上
 
 `main.py` 进入,`ui_windows.py` 为 界面  
 service 为业务模块,和gui线程同级,爬虫\下载放到单独线程中,通过回调函数通过service调用ui中的钩子函数,触发插槽更新ui.  

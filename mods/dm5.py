@@ -74,7 +74,7 @@ class DM5Comicat(WebsiteInterface):
 
         return comic_info['chapterList']
 
-    def search_callback(self, key, callback) -> list[ComicInfo]:
+    def search_callback(self, key, callback) -> List[ComicInfo]:
         comic_info_list: List[ComicInfo] = []
         url = self.searchUrl.format(key)
         response = self.session.get(url)
