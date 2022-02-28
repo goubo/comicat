@@ -1,10 +1,13 @@
 from typing import Optional, List
 
 import requests
+from fake_useragent import UserAgent
 from lxml import etree
 
 from entity import ImageInfo, ChapterInfo, ComicInfo
 from mods.website_interface import WebsiteInterface
+
+ua = UserAgent()
 
 
 class DogemangaComicat(WebsiteInterface):
@@ -14,8 +17,7 @@ class DogemangaComicat(WebsiteInterface):
         self.searchUrl = "https://dogemanga.com/?q={}"
         self.domain = "https://dogemanga.com"
         self.headers = {
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, '
-                          'like Gecko) Chrome/97.0.4692.99 Safari/537.36'
+            'User-Agent': ua.chrome
         }
 
     def search_callback(self, key, callback) -> List[ComicInfo]:

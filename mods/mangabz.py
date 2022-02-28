@@ -3,11 +3,14 @@ from typing import List, Optional
 
 import execjs
 import requests
+from fake_useragent import UserAgent
 from lxml import etree
 from parsel import SelectorList, Selector
 
 from entity import ImageInfo, ChapterInfo, ComicInfo
 from mods.website_interface import WebsiteInterface
+
+ua = UserAgent()
 
 
 class MangabzComicat(WebsiteInterface):
@@ -18,8 +21,7 @@ class MangabzComicat(WebsiteInterface):
         self.searchUrl = "https://mangabz.com/search?title={}"
         self.domain = "https://mangabz.com"
         self.headers = {
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, '
-                          'like Gecko) Chrome/97.0.4692.99 Safari/537.36'
+            'User-Agent': ua.chrome
         }
 
     def search_callback(self, key, callback) -> List[ComicInfo]:
