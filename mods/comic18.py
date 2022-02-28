@@ -36,7 +36,7 @@ class JM18Comicat(WebsiteInterface):
     def search_callback(self, key, callback) -> List[ComicInfo]:
         comic_info_list: List[ComicInfo] = []
         for page in range(1, 10):
-            url = self.searchUrl.format(key, page)
+            url = self.searchUrl.format(urllib.parse.quote(key), page)
             request = req.Request(url, headers=self.headers)
             response = req.urlopen(request, timeout=20)
             if response.status != 200:
